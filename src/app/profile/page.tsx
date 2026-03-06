@@ -76,10 +76,11 @@ export default function ProfilePage() {
           goals: form.goals.length > 0 ? form.goals : ["マッチ数を増やしたい"],
         }),
       });
+      if (res.status === 429) { setShowPaywall(true); return; }
       const data = await res.json();
       if (data.error) throw new Error(data.error);
       setResult(data.result);
-      const next = usageCount + 1;
+      const next = data.count ?? usageCount + 1;
       setUsageCount(next);
       localStorage.setItem(STORAGE_KEY, String(next));
     } catch (err) {
@@ -306,13 +307,27 @@ export default function ProfilePage() {
                 {result}
               </pre>
             </div>
-            <div className="mt-4 flex gap-3">
+            <div className="mt-4 flex flex-wrap gap-3">
               <button
                 onClick={() => navigator.clipboard.writeText(result)}
                 className="flex items-center gap-2 bg-pink-50 text-pink-600 border border-pink-200 px-4 py-2 rounded-xl text-sm hover:bg-pink-100 transition-colors"
               >
                 📋 コピーする
               </button>
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`婚活AIでプロフィールを添削してもらいました！💑 #婚活 #婚活AI https://konkatsu-ai.vercel.app`)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2 bg-black text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-colors"
+              >
+                𝕏 でシェア
+              </a>
+              <a
+                href={`https://line.me/R/msg/text/?${encodeURIComponent(`婚活AIでプロフィールを添削してもらいました！💑 #婚活 https://konkatsu-ai.vercel.app`)}`}
+                target="_blank" rel="noopener noreferrer"
+                className="flex items-center gap-1.5 px-4 py-2 bg-[#06C755] text-white text-sm font-bold rounded-xl hover:bg-[#05b04c] transition-colors"
+              >
+                LINE でシェア
+              </a>
               <button
                 onClick={() => { setResult(null); setForm({ app: "Pairs", age: "", job: "", hobbies: "", profile: "", goals: [] }); }}
                 className="flex items-center gap-2 bg-gray-50 text-gray-600 border border-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-gray-100 transition-colors"
