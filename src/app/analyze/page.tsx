@@ -3,12 +3,30 @@
 import { useState } from "react";
 import Link from "next/link";
 
+const ANALYZE_LIMIT_KEY = "konkatsu_analyze_used";
+
+function isLimitReached(): boolean {
+  if (typeof window === "undefined") return false;
+  return localStorage.getItem(ANALYZE_LIMIT_KEY) === "true";
+}
+
+async function startCheckout(plan: string) {
+  const res = await fetch("/api/create-checkout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ plan }),
+  });
+  const data = await res.json();
+  if (data.url) window.location.href = data.url;
+}
+
 export default function AnalyzePage() {
   const [replyText, setReplyText] = useState("");
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [showPaywall, setShowPaywall] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +45,12 @@ export default function AnalyzePage() {
         body: JSON.stringify({ replyText, context }),
       });
       const data = await res.json();
+      if (data.error === "LIMIT_REACHED") {
+        setShowPaywall(true);
+        return;
+      }
       if (data.error) throw new Error(data.error);
+      localStorage.setItem(ANALYZE_LIMIT_KEY, "true");
       setResult(data.result);
     } catch (err) {
       setError(err instanceof Error ? err.message : "エラーが発生しました。");
@@ -38,6 +61,26 @@ export default function AnalyzePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-rose-50">
+      {showPaywall && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
+          <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl text-center">
+            <div className="text-3xl mb-3">💑</div>
+            <h2 className="text-lg font-bold mb-2">無料回数を使い切りました</h2>
+            <p className="text-sm text-gray-500 mb-4">返信分析・メッセージ生成を無制限に使うにはプランへのアップグレードが必要です。</p>
+            <div className="space-y-3 mb-4">
+              <button onClick={() => startCheckout("standard")}
+                className="block w-full bg-pink-500 text-white font-bold py-3 rounded-xl hover:bg-pink-600">
+                ¥1,980/月 — スタンダードプランで続ける
+              </button>
+              <button onClick={() => startCheckout("popular")}
+                className="block w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700">
+                ¥3,980/月 — モテるプランで全機能解放
+              </button>
+            </div>
+            <button onClick={() => setShowPaywall(false)} className="text-xs text-gray-400">閉じる</button>
+          </div>
+        </div>
+      )}
       <nav className="bg-white border-b border-pink-100 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2">
