@@ -45,22 +45,37 @@ export async function POST(req: NextRequest) {
 ${replyText}
 ${context ? `\n会話の流れ:\n${context}` : ''}
 
-以下の観点で分析・診断してください：
-1. 脈あり度（0〜100%で評価）
-2. 返信から読み取れる相手の気持ち・状況
-3. 次に送るべきベストメッセージ（具体的な文例）
-4. 注意すべき点・やってはいけないこと`
+必ず以下の形式通りに出力してください（区切り文字を変更しないこと）：
+
+SCORE:XX
+===FEELINGS===
+（相手の気持ち・状況を具体的に分析。感情・行動パターン・現在の関心度を3〜5文で）
+===MESSAGE===
+（次に送るべき返信メッセージの具体例を1〜2個。改行で区切る。そのままコピーして送れるレベルで）
+===CAUTION===
+（やってはいけないこと・注意点を箇条書き2〜3点。「・」で始める）`
 
     const message = await getClient().messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1200,
-      system: 'あなたは恋愛心理学の専門家です。マッチングアプリのメッセージから相手の心理を読み取り、次の最適なアクションを具体的に提案します。',
+      system: 'あなたは恋愛心理学の専門家です。マッチングアプリのメッセージから相手の心理を読み取り、次の最適なアクションを具体的に提案します。指定された出力フォーマットを必ず守ってください。',
       messages: [{ role: 'user', content: prompt }],
     })
 
+    const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
+    const scoreMatch = rawText.match(/SCORE:(\d+)/)
+    const score = scoreMatch ? parseInt(scoreMatch[1]) : null
+    const feelings = rawText.split('===FEELINGS===')[1]?.split('===MESSAGE===')[0]?.trim() ?? ''
+    const messageText = rawText.split('===MESSAGE===')[1]?.split('===CAUTION===')[0]?.trim() ?? ''
+    const caution = rawText.split('===CAUTION===')[1]?.trim() ?? ''
+
     const newCount = cookieCount + 1
     const response = NextResponse.json({
-      result: message.content[0].type === 'text' ? message.content[0].text : '',
+      score,
+      feelings,
+      message: messageText,
+      caution,
+      raw: rawText,
       count: newCount,
     })
     if (!isPremium) {

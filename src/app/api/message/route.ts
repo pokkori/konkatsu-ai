@@ -63,21 +63,43 @@ ${targetProfile}
 メッセージの目的: ${purposeLabel[purpose] || purpose}
 自分のキャラクター: ${characterLabel[character] || character}
 
-3パターンの文案を作成してください。それぞれ:
-- パターン名（例：共通点アプローチ）
-- メッセージ本文
-- このメッセージが効果的な理由`
+以下の形式で3パターン出力してください（区切り文字を必ず守ること）：
+
+NAME:（パターン名。例：共通点アプローチ）
+TEXT:（メッセージ本文。そのままコピーして送れるレベルで）
+WHY:（このメッセージが効果的な理由を1〜2文で）
+===
+NAME:（パターン名）
+TEXT:（メッセージ本文）
+WHY:（理由）
+===
+NAME:（パターン名）
+TEXT:（メッセージ本文）
+WHY:（理由）`
 
     const message = await getClient().messages.create({
       model: 'claude-haiku-4-5-20251001',
       max_tokens: 1500,
-      system: 'あなたはマッチングアプリのメッセージ術の専門家です。返信率が高く、自然で魅力的なメッセージを作成します。相手のプロフィールから共通点や興味を見つけ、会話が弾むきっかけを作ります。',
+      system: 'あなたはマッチングアプリのメッセージ術の専門家です。返信率が高く、自然で魅力的なメッセージを作成します。相手のプロフィールから共通点や興味を見つけ、会話が弾むきっかけを作ります。必ず指定された出力フォーマットを守ってください。',
       messages: [{ role: 'user', content: prompt }],
     })
 
-    const result = message.content[0].type === 'text' ? message.content[0].text : ''
+    const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
+
+    // Parse the 3 patterns from the structured output
+    const patterns = rawText.split('===').map((block: string) => {
+      const nameMatch = block.match(/NAME[：:](.+)/)
+      const textMatch = block.match(/TEXT[：:]([\s\S]*?)WHY[：:]/)
+      const whyMatch = block.match(/WHY[：:]([\s\S]*)$/)
+      return {
+        name: nameMatch?.[1]?.trim() ?? '',
+        text: textMatch?.[1]?.trim() ?? '',
+        why: whyMatch?.[1]?.trim() ?? '',
+      }
+    }).filter((p: { name: string; text: string; why: string }) => p.name && p.text)
+
     const newCount = cookieCount + 1
-    const res = NextResponse.json({ result, count: newCount })
+    const res = NextResponse.json({ patterns, raw: rawText, count: newCount })
 
     if (!isPremium) {
       res.cookies.set(COOKIE_KEY, String(newCount), {
