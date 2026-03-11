@@ -42,6 +42,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: '相手のプロフィール情報を入力してください。' }, { status: 400 })
   }
 
+  try {
     const purposeLabel: Record<string, string> = {
       first: '最初のメッセージ（マッチング直後）',
       date: 'デートに誘うメッセージ',
@@ -60,8 +61,8 @@ export async function POST(req: NextRequest) {
 相手のプロフィール:
 ${targetProfile}
 
-メッセージの目的: ${purposeLabel[purpose] || purpose}
-自分のキャラクター: ${characterLabel[character] || character}
+メッセージの目的: ${purpose ? (purposeLabel[purpose] || purpose) : ''}
+自分のキャラクター: ${character ? (characterLabel[character] || character) : ''}
 
 以下の形式で3パターン出力してください（区切り文字を必ず守ること）：
 

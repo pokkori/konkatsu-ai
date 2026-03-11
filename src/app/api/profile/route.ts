@@ -38,6 +38,7 @@ export async function POST(req: NextRequest) {
 
   const { app, age, job, hobbies, profile, goals } = body
 
+  try {
     if (!age || !job || !profile) {
       return NextResponse.json({ error: '年齢・職業・プロフィール文は必須です。' }, { status: 400 })
     }
