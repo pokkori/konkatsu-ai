@@ -110,16 +110,10 @@ export default function ProfilePage() {
               プレミアムプランで無制限に使えます。
             </p>
             <button
-              onClick={() => openPayjp("モテるプラン ¥3,980/月")}
+              onClick={() => openPayjp("プレミアムプラン ¥1,980/月")}
               className="w-full bg-gradient-to-r from-pink-500 to-red-500 text-white py-3 rounded-xl font-bold hover:from-pink-600 hover:to-red-600 transition-all mb-3"
             >
-              モテるプランで続ける（¥3,980/月）
-            </button>
-            <button
-              onClick={() => openPayjp("スタンダードプラン ¥1,980/月")}
-              className="w-full border border-pink-300 text-pink-600 py-2 rounded-xl text-sm font-medium hover:bg-pink-50 transition-colors mb-3"
-            >
-              スタンダードプラン（¥1,980/月）
+              ¥1,980/月 — プレミアムプランで続ける
             </button>
             <button onClick={() => setShowPaywall(false)} className="text-xs text-gray-400 hover:text-gray-600">
               閉じる

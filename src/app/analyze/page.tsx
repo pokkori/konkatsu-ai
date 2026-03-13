@@ -99,13 +99,9 @@ export default function AnalyzePage() {
             <h2 className="text-lg font-bold mb-2">無料回数を使い切りました</h2>
             <p className="text-sm text-gray-500 mb-4">返信分析・メッセージ生成を無制限に使うにはプランへのアップグレードが必要です。</p>
             <div className="space-y-3 mb-4">
-              <button onClick={() => openPayjp("スタンダードプラン ¥1,980/月")}
+              <button onClick={() => openPayjp("プレミアムプラン ¥1,980/月")}
                 className="block w-full bg-pink-500 text-white font-bold py-3 rounded-xl hover:bg-pink-600">
-                ¥1,980/月 — スタンダードプランで続ける
-              </button>
-              <button onClick={() => openPayjp("モテるプラン ¥3,980/月")}
-                className="block w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700">
-                ¥3,980/月 — モテるプランで全機能解放
+                ¥1,980/月 — プレミアムプランで続ける
               </button>
             </div>
             <button onClick={() => setShowPaywall(false)} className="text-xs text-gray-400">閉じる</button>
