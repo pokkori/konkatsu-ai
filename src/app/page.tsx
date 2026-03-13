@@ -1,16 +1,8 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-
-async function startCheckout(plan: string) {
-  const res = await fetch("/api/create-checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ plan }),
-  });
-  const data = await res.json();
-  if (data.url) window.location.href = data.url;
-}
+import PayjpModal from "@/components/PayjpModal";
 
 const features = [
   {
@@ -36,40 +28,24 @@ const plans = [
     price: "0",
     features: ["プロフィール添削 1回", "メッセージ生成 3回", "返信分析 1回"],
     cta: "無料で始める",
-    stripeKey: null,
+    isPaid: false,
     href: "/profile",
     highlight: false,
   },
   {
-    name: "スタンダード",
+    name: "プレミアム",
     price: "1,980",
     features: ["プロフィール添削 無制限", "メッセージ生成 無制限", "返信分析 無制限"],
     cta: "始める",
-    stripeKey: "standard",
-    href: null,
-    highlight: false,
-  },
-  {
-    name: "モテるプラン",
-    price: "3,980",
-    features: ["スタンダード全機能", "デート会話ネタ生成", "告白文作成", "優先サポート"],
-    cta: "おすすめ",
-    stripeKey: "popular",
+    isPaid: true,
     href: null,
     highlight: true,
-  },
-  {
-    name: "完全サポート",
-    price: "9,800",
-    features: ["モテるプラン全機能", "週1回AIロールプレイ練習", "専任コーチによるレビュー"],
-    cta: "始める",
-    stripeKey: "full",
-    href: null,
-    highlight: false,
   },
 ];
 
 export default function Home() {
+  const [showModal, setShowModal] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       {/* ナビゲーション */}
@@ -117,21 +93,21 @@ export default function Home() {
       </section>
 
       {/* 料金セクション */}
-      <section className="py-16 px-6 bg-pink-50">
+      <section id="pricing" className="py-16 px-6 bg-pink-50">
         <h2 className="text-2xl font-bold text-center text-gray-900 mb-12">料金プラン</h2>
-        <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
+        <div className="grid md:grid-cols-2 gap-6 max-w-2xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.name}
               className={`rounded-2xl p-6 border-2 ${
                 plan.highlight
-                  ? "border-pink-500 bg-white shadow-lg scale-105"
+                  ? "border-pink-500 bg-white shadow-lg"
                   : "border-pink-200 bg-white"
               }`}
             >
               {plan.highlight && (
                 <span className="block text-center text-xs font-bold text-white bg-pink-500 rounded-full px-3 py-1 mb-3">
-                  人気No.1
+                  おすすめ
                 </span>
               )}
               <h3 className="text-lg font-bold text-gray-900 mb-1">{plan.name}</h3>
@@ -147,14 +123,10 @@ export default function Home() {
                   </li>
                 ))}
               </ul>
-              {plan.stripeKey ? (
+              {plan.isPaid ? (
                 <button
-                  onClick={() => startCheckout(plan.stripeKey!)}
-                  className={`w-full py-2 rounded-full text-sm font-bold transition-colors ${
-                    plan.highlight
-                      ? "bg-pink-600 hover:bg-pink-700 text-white"
-                      : "border border-pink-300 text-pink-600 hover:bg-pink-50"
-                  }`}
+                  onClick={() => setShowModal(true)}
+                  className="w-full py-2 rounded-full text-sm font-bold transition-colors bg-pink-600 hover:bg-pink-700 text-white"
                 >
                   {plan.cta}
                 </button>
@@ -175,6 +147,18 @@ export default function Home() {
       <footer className="text-center py-8 text-sm text-gray-400 border-t">
         © 2025 婚活AI. All rights reserved.
       </footer>
+
+      {showModal && (
+        <PayjpModal
+          publicKey={process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY!}
+          planLabel="プレミアムプラン ¥1,980/月 — プロフィール添削・メッセージ生成・返信分析 無制限"
+          onSuccess={() => {
+            setShowModal(false);
+            window.location.href = "/success";
+          }}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </div>
   );
 }

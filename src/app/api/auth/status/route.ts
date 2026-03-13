@@ -5,6 +5,8 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const cookieStore = await cookies();
-  const isPremium = cookieStore.get("stripe_premium")?.value === "1";
+  const isPremium =
+    cookieStore.get("stripe_premium")?.value === "1" ||
+    !!cookieStore.get("premium")?.value;
   return NextResponse.json({ isPremium });
 }
