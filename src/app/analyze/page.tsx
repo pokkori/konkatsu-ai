@@ -2,16 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import PayjpModal from "@/components/PayjpModal";
 
-async function startCheckout(plan: string) {
-  const res = await fetch("/api/create-checkout", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ plan }),
-  });
-  const data = await res.json();
-  if (data.url) window.location.href = data.url;
-}
+const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
 interface AnalyzeResult {
   score: number | null;
@@ -51,6 +44,8 @@ export default function AnalyzePage() {
   const [error, setError] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [showPayjp, setShowPayjp] = useState(false);
+  const [payjpPlanLabel, setPayjpPlanLabel] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,8 +76,22 @@ export default function AnalyzePage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  function openPayjp(planLabel: string) {
+    setPayjpPlanLabel(planLabel);
+    setShowPaywall(false);
+    setShowPayjp(true);
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-50 to-rose-50">
+      {showPayjp && (
+        <PayjpModal
+          publicKey={PAYJP_PUBLIC_KEY}
+          planLabel={payjpPlanLabel}
+          onSuccess={() => { setShowPayjp(false); window.location.reload(); }}
+          onClose={() => setShowPayjp(false)}
+        />
+      )}
       {showPaywall && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl p-6 max-w-sm w-full shadow-xl text-center">
@@ -90,11 +99,11 @@ export default function AnalyzePage() {
             <h2 className="text-lg font-bold mb-2">無料回数を使い切りました</h2>
             <p className="text-sm text-gray-500 mb-4">返信分析・メッセージ生成を無制限に使うにはプランへのアップグレードが必要です。</p>
             <div className="space-y-3 mb-4">
-              <button onClick={() => startCheckout("standard")}
+              <button onClick={() => openPayjp("スタンダードプラン ¥1,980/月")}
                 className="block w-full bg-pink-500 text-white font-bold py-3 rounded-xl hover:bg-pink-600">
                 ¥1,980/月 — スタンダードプランで続ける
               </button>
-              <button onClick={() => startCheckout("popular")}
+              <button onClick={() => openPayjp("モテるプラン ¥3,980/月")}
                 className="block w-full bg-red-600 text-white font-bold py-3 rounded-xl hover:bg-red-700">
                 ¥3,980/月 — モテるプランで全機能解放
               </button>
