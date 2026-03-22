@@ -103,7 +103,12 @@ export default function ProfilePage() {
       {showPaywall && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 px-4">
           <div className="bg-white rounded-2xl shadow-xl p-8 max-w-sm w-full text-center">
-            <div className="text-4xl mb-3">🔒</div>
+            <div className="mb-3 flex justify-center">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-10 h-10 text-pink-500" aria-hidden="true">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 11V7a5 5 0 0110 0v4" />
+              </svg>
+            </div>
             <h2 className="text-xl font-bold text-gray-800 mb-2">無料枠を使い切りました</h2>
             <p className="text-gray-500 text-sm mb-6">
               無料プランはプロフィール添削1回まで。<br />
@@ -124,8 +129,10 @@ export default function ProfilePage() {
       {/* ナビ */}
       <nav className="bg-white border-b border-pink-100 shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-xl">💑</span>
+          <Link href="/" className="flex items-center gap-2" aria-label="婚活AI トップページへ戻る">
+            <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-pink-500" aria-hidden="true">
+              <path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/>
+            </svg>
             <span className="font-bold text-pink-600">婚活AI</span>
           </Link>
           <span className="text-gray-300">/</span>
@@ -136,7 +143,7 @@ export default function ProfilePage() {
       <div className="max-w-4xl mx-auto px-4 py-10">
         <div className="text-center mb-10">
           <div className="inline-flex items-center bg-pink-100 text-pink-700 rounded-full px-4 py-1 text-sm mb-4">
-            📝 プロフィール添削
+            プロフィール添削
           </div>
           <h1 className="text-3xl md:text-4xl font-bold text-gray-800 mb-3">
             AIがプロフィールを<br />劇的改善します
@@ -301,7 +308,9 @@ export default function ProfilePage() {
         {result && (
           <div className="mt-8 bg-white rounded-2xl shadow-sm border border-green-200 p-6">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">✨</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-6 h-6 text-pink-500" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
               <h2 className="text-xl font-bold text-gray-800">添削結果</h2>
             </div>
             <div className="prose prose-sm max-w-none">
@@ -312,29 +321,37 @@ export default function ProfilePage() {
             <div className="mt-4 flex flex-wrap gap-3">
               <button
                 onClick={() => navigator.clipboard.writeText(result)}
+                aria-label="添削結果をクリップボードにコピーする"
                 className="flex items-center gap-2 bg-pink-50 text-pink-600 border border-pink-200 px-4 py-2 rounded-xl text-sm hover:bg-pink-100 transition-colors"
               >
-                📋 コピーする
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-4 h-4" aria-hidden="true">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" />
+                </svg>
+                コピーする
               </button>
               <a
-                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`婚活AIでプロフィールを添削してもらいました！💑 #婚活 #婚活AI https://konkatsu-ai.vercel.app`)}`}
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(`婚活AIでプロフィールを添削してもらいました！#婚活 #婚活AI https://konkatsu-ai.vercel.app`)}`}
                 target="_blank" rel="noopener noreferrer"
+                aria-label="添削結果をXでシェアする"
                 className="flex items-center gap-1.5 px-4 py-2 bg-black text-white text-sm font-bold rounded-xl hover:bg-gray-800 transition-colors"
               >
                 𝕏 でシェア
               </a>
               <a
-                href={`https://line.me/R/msg/text/?${encodeURIComponent(`婚活AIでプロフィールを添削してもらいました！💑 #婚活 https://konkatsu-ai.vercel.app`)}`}
+                href={`https://line.me/R/msg/text/?${encodeURIComponent(`婚活AIでプロフィールを添削してもらいました！#婚活 https://konkatsu-ai.vercel.app`)}`}
                 target="_blank" rel="noopener noreferrer"
+                aria-label="添削結果をLINEでシェアする"
                 className="flex items-center gap-1.5 px-4 py-2 bg-[#06C755] text-white text-sm font-bold rounded-xl hover:bg-[#05b04c] transition-colors"
               >
                 LINE でシェア
               </a>
               <button
                 onClick={() => { setResult(null); setForm({ app: "Pairs", age: "", job: "", hobbies: "", profile: "", goals: [] }); }}
+                aria-label="フォームをリセットしてもう一度添削する"
                 className="flex items-center gap-2 bg-gray-50 text-gray-600 border border-gray-200 px-4 py-2 rounded-xl text-sm hover:bg-gray-100 transition-colors"
               >
-                🔄 もう一度
+                もう一度
               </button>
             </div>
           </div>

@@ -6,17 +6,30 @@ import PayjpModal from "@/components/PayjpModal";
 
 const features = [
   {
-    icon: "✏️",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-10 h-10 text-pink-500 mx-auto" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536M9 11l6-6 3 3-6 6H9v-3z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M3 17h4v4H3v-4z" />
+      </svg>
+    ),
     title: "プロフィール添削",
     description: "マッチング率が上がるプロフィールをAIが提案。Pairs・Tinder・withなど全アプリ対応。",
   },
   {
-    icon: "💬",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-10 h-10 text-pink-500 mx-auto" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+      </svg>
+    ),
     title: "メッセージ文案生成",
     description: "相手のプロフィールに合わせた自然なメッセージを3パターン即座に生成。",
   },
   {
-    icon: "🔍",
+    icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-10 h-10 text-pink-500 mx-auto" aria-hidden="true">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    ),
     title: "返信分析",
     description: "相手の返信から脈あり度を診断。次のメッセージへのアドバイス付き。",
   },
@@ -49,12 +62,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* ナビゲーション */}
-      <nav className="flex items-center justify-between px-6 py-4 border-b border-pink-100">
-        <span className="text-xl font-bold text-pink-600">婚活AI</span>
+      <nav className="flex items-center justify-between px-6 py-4 border-b border-pink-100" aria-label="メインナビゲーション">
+        <span className="text-xl font-bold text-pink-600" aria-label="婚活AI トップページ">婚活AI</span>
         <div className="flex gap-4">
-          <Link href="/profile" className="text-sm text-gray-600 hover:text-pink-600">プロフィール添削</Link>
-          <Link href="/message" className="text-sm text-gray-600 hover:text-pink-600">メッセージ生成</Link>
-          <Link href="/pricing" className="text-sm text-gray-600 hover:text-pink-600">料金</Link>
+          <Link href="/profile" className="text-sm text-gray-600 hover:text-pink-600" aria-label="プロフィール添削ツールへ">プロフィール添削</Link>
+          <Link href="/message" className="text-sm text-gray-600 hover:text-pink-600" aria-label="メッセージ生成ツールへ">メッセージ生成</Link>
+          <Link href="/pricing" className="text-sm text-gray-600 hover:text-pink-600" aria-label="料金プラン一覧へ">料金</Link>
         </div>
       </nav>
 
@@ -72,6 +85,7 @@ export default function Home() {
         <Link
           href="/profile"
           className="inline-block bg-pink-600 hover:bg-pink-700 text-white font-bold py-4 px-10 rounded-full text-lg transition-colors"
+          aria-label="プロフィール添削を無料で試す"
         >
           無料で試してみる
         </Link>
@@ -84,7 +98,7 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-8">
           {features.map((f) => (
             <div key={f.title} className="text-center p-6 rounded-2xl bg-pink-50 border border-pink-100">
-              <div className="text-4xl mb-4">{f.icon}</div>
+              <div className="mb-4">{f.icon}</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2">{f.title}</h3>
               <p className="text-gray-600 text-sm leading-relaxed">{f.description}</p>
             </div>
