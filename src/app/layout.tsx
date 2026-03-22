@@ -83,7 +83,10 @@ export const metadata: Metadata = {
     siteName: "婚活AI",
     locale: "ja_JP",
     type: "website",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "婚活AI - AIがあなたの恋愛を全力サポート" }],
+    images: [
+      { url: "/opengraph-image", width: 1200, height: 630, alt: "婚活AI - AIがあなたの恋愛を全力サポート" },
+      { url: "/og.svg", width: 1200, height: 630, alt: "婚活AI - AIがあなたの恋愛を全力サポート" },
+    ],
   },
   twitter: {
     card: "summary_large_image",

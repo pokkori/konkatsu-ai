@@ -1,5 +1,5 @@
 import Anthropic from '@anthropic-ai/sdk'
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,40 +23,39 @@ function checkRateLimit(ip: string): boolean {
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for') || 'unknown'
   if (!checkRateLimit(ip)) {
-    return NextResponse.json({ error: 'リクエストが多すぎます。しばらく待ってから再試行してください。' }, { status: 429 })
+    return new Response(JSON.stringify({ error: 'リクエストが多すぎます。しばらく待ってから再試行してください。' }), { status: 429, headers: { 'Content-Type': 'application/json' } })
   }
 
   const isPremium = req.cookies.get('stripe_premium')?.value === '1' || req.cookies.get('premium')?.value === '1'
   const cookieCount = parseInt(req.cookies.get(COOKIE_KEY)?.value || '0')
   if (!isPremium && cookieCount >= FREE_LIMIT) {
-    return NextResponse.json({ error: 'LIMIT_REACHED' }, { status: 429 })
+    return new Response(JSON.stringify({ error: 'LIMIT_REACHED' }), { status: 429, headers: { 'Content-Type': 'application/json' } })
   }
 
   let body: { targetProfile?: string; purpose?: string; character?: string }
   try { body = await req.json() }
-  catch { return NextResponse.json({ error: 'リクエストの形式が正しくありません' }, { status: 400 }) }
+  catch { return new Response(JSON.stringify({ error: 'リクエストの形式が正しくありません' }), { status: 400, headers: { 'Content-Type': 'application/json' } }) }
 
   const { targetProfile, purpose, character } = body
 
   if (!targetProfile) {
-    return NextResponse.json({ error: '相手のプロフィール情報を入力してください。' }, { status: 400 })
+    return new Response(JSON.stringify({ error: '相手のプロフィール情報を入力してください。' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
   }
 
-  try {
-    const purposeLabel: Record<string, string> = {
-      first: '最初のメッセージ（マッチング直後）',
-      date: 'デートに誘うメッセージ',
-      reply: '返信が来た後の返し方',
-    }
+  const purposeLabel: Record<string, string> = {
+    first: '最初のメッセージ（マッチング直後）',
+    date: 'デートに誘うメッセージ',
+    reply: '返信が来た後の返し方',
+  }
 
-    const characterLabel: Record<string, string> = {
-      bright: '明るく元気な',
-      calm: '落ち着いて誠実な',
-      funny: 'ユーモアがある面白い',
-      serious: '真面目で誠実な',
-    }
+  const characterLabel: Record<string, string> = {
+    bright: '明るく元気な',
+    calm: '落ち着いて誠実な',
+    funny: 'ユーモアがある面白い',
+    serious: '真面目で誠実な',
+  }
 
-    const prompt = `マッチングアプリのメッセージ文案を3パターン作成してください。
+  const prompt = `マッチングアプリのメッセージ文案を3パターン作成してください。
 
 相手のプロフィール:
 ${targetProfile}
@@ -78,41 +77,61 @@ NAME:（パターン名）
 TEXT:（メッセージ本文）
 WHY:（理由）`
 
-    const message = await getClient().messages.create({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 1500,
-      system: 'あなたはマッチングアプリのメッセージ戦略を専門とする恋愛コーチです。10年以上の婚活支援実績を持ち、返信率80%超のメッセージを生成してきた実績があります。相手のプロフィールから趣味・価値観・ライフスタイルを読み取り、共通点アプローチ・質問型アプローチ・褒め+質問のコンボなど状況に応じたパターンで、自然かつ個性的なメッセージを作成します。メッセージはそのままコピーして送れるレベルの完成品を提供し、必ず指定された出力フォーマットを守ってください。',
-      messages: [{ role: 'user', content: prompt }],
-    })
+  const newCount = cookieCount + 1
 
-    const rawText = message.content[0].type === 'text' ? message.content[0].text : ''
+  const encoder = new TextEncoder()
+  const stream = new ReadableStream({
+    async start(controller) {
+      try {
+        let fullText = ''
+        const anthropicStream = await getClient().messages.stream({
+          model: 'claude-haiku-4-5-20251001',
+          max_tokens: 1500,
+          system: 'あなたはマッチングアプリのメッセージ戦略を専門とする恋愛コーチです。10年以上の婚活支援実績を持ち、返信率80%超のメッセージを生成してきた実績があります。相手のプロフィールから趣味・価値観・ライフスタイルを読み取り、共通点アプローチ・質問型アプローチ・褒め+質問のコンボなど状況に応じたパターンで、自然かつ個性的なメッセージを作成します。メッセージはそのままコピーして送れるレベルの完成品を提供し、必ず指定された出力フォーマットを守ってください。',
+          messages: [{ role: 'user', content: prompt }],
+        })
 
-    // Parse the 3 patterns from the structured output
-    const patterns = rawText.split('===').map((block: string) => {
-      const nameMatch = block.match(/NAME[：:](.+)/)
-      const textMatch = block.match(/TEXT[：:]([\s\S]*?)WHY[：:]/)
-      const whyMatch = block.match(/WHY[：:]([\s\S]*)$/)
-      return {
-        name: nameMatch?.[1]?.trim() ?? '',
-        text: textMatch?.[1]?.trim() ?? '',
-        why: whyMatch?.[1]?.trim() ?? '',
+        for await (const chunk of anthropicStream) {
+          if (chunk.type === 'content_block_delta' && chunk.delta.type === 'text_delta') {
+            fullText += chunk.delta.text
+            const data = JSON.stringify({ type: 'delta', text: chunk.delta.text })
+            controller.enqueue(encoder.encode(`data: ${data}\n\n`))
+          }
+        }
+
+        // テキスト全体をパースしてパターンを返す
+        const patterns = fullText.split('===').map((block: string) => {
+          const nameMatch = block.match(/NAME[：:](.+)/)
+          const textMatch = block.match(/TEXT[：:]([\s\S]*?)WHY[：:]/)
+          const whyMatch = block.match(/WHY[：:]([\s\S]*)$/)
+          return {
+            name: nameMatch?.[1]?.trim() ?? '',
+            text: textMatch?.[1]?.trim() ?? '',
+            why: whyMatch?.[1]?.trim() ?? '',
+          }
+        }).filter((p: { name: string; text: string; why: string }) => p.name && p.text)
+
+        const doneData = JSON.stringify({ type: 'done', patterns, count: newCount })
+        controller.enqueue(encoder.encode(`data: ${doneData}\n\n`))
+        controller.close()
+      } catch (error) {
+        console.error('Message API stream error:', error)
+        const errData = JSON.stringify({ type: 'error', message: 'AIの処理中にエラーが発生しました。' })
+        controller.enqueue(encoder.encode(`data: ${errData}\n\n`))
+        controller.close()
       }
-    }).filter((p: { name: string; text: string; why: string }) => p.name && p.text)
+    },
+  })
 
-    const newCount = cookieCount + 1
-    const res = NextResponse.json({ patterns, raw: rawText, count: newCount })
+  const headers = new Headers({
+    'Content-Type': 'text/event-stream',
+    'Cache-Control': 'no-cache',
+    'Connection': 'keep-alive',
+  })
 
-    if (!isPremium) {
-      res.cookies.set(COOKIE_KEY, String(newCount), {
-        maxAge: 60 * 60 * 24 * 30,
-        sameSite: 'lax',
-        httpOnly: true,
-        secure: true,
-      })
-    }
-    return res
-  } catch (error) {
-    console.error('Message API error:', error)
-    return NextResponse.json({ error: 'AIの処理中にエラーが発生しました。' }, { status: 500 })
+  if (!isPremium) {
+    headers.append('Set-Cookie', `${COOKIE_KEY}=${newCount}; Max-Age=${60 * 60 * 24 * 30}; SameSite=Lax; HttpOnly; Secure; Path=/`)
   }
+
+  return new Response(stream, { headers })
 }
