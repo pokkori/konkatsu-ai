@@ -75,7 +75,7 @@ export default function Home() {
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
       {/* ナビゲーション — グラスモーフィズム */}
       <nav
-        className="sticky top-0 z-40 backdrop-blur-md bg-white/70 border-b border-pink-100/60 shadow-sm"
+        className="sticky top-0 z-40 glass-nav border-b border-pink-100/50 shadow-sm"
         aria-label="メインナビゲーション"
       >
         <div className="max-w-5xl mx-auto flex items-center justify-between px-6 py-3">
@@ -146,7 +146,7 @@ export default function Home() {
               <div
                 key={s.label}
                 role="listitem"
-                className="backdrop-blur-sm bg-white/60 border border-pink-100 rounded-2xl px-6 py-3 shadow-sm"
+                className="glass-card border-pink-100/60 rounded-2xl px-6 py-3 shadow-sm"
               >
                 <div className="text-2xl font-bold text-pink-600">{s.value}</div>
                 <div className="text-xs text-gray-500 mt-0.5">{s.label}</div>
@@ -166,7 +166,7 @@ export default function Home() {
               key={f.title}
               href={f.href}
               aria-label={`${f.title}ツールを使う`}
-              className="group block text-center p-8 rounded-3xl bg-white/70 backdrop-blur-sm border border-pink-100/80 shadow-sm hover:shadow-lg hover:shadow-pink-100/60 hover:-translate-y-1 transition-all duration-300"
+              className="group block text-center p-8 rounded-3xl glass-card border-pink-100/60 shadow-sm hover:shadow-lg hover:shadow-pink-100/60 hover:-translate-y-1 transition-all duration-300"
             >
               <div className="mb-5">{f.icon}</div>
               <h3 className="text-lg font-bold text-gray-900 mb-2 group-hover:text-pink-600 transition-colors">{f.title}</h3>
@@ -193,7 +193,7 @@ export default function Home() {
           ].map((v, i) => (
             <figure
               key={i}
-              className="bg-white/70 backdrop-blur-sm border border-pink-100 rounded-2xl p-5 shadow-sm"
+              className="glass-card border-pink-100/60 rounded-2xl p-5 shadow-sm"
               aria-label={`${v.name}さんの口コミ`}
             >
               <div className="flex gap-0.5 mb-3" role="img" aria-label="星5つ評価">
@@ -221,8 +221,8 @@ export default function Home() {
               key={plan.name}
               className={`rounded-3xl p-7 border-2 transition-all duration-300 ${
                 plan.highlight
-                  ? "border-pink-400 bg-gradient-to-b from-white to-pink-50/50 shadow-xl shadow-pink-100/60 hover:shadow-pink-200/60 hover:-translate-y-0.5"
-                  : "border-pink-200 bg-white/80 backdrop-blur-sm hover:shadow-md"
+                  ? "border-pink-400 glass-card-strong shadow-xl shadow-pink-100/60 hover:shadow-pink-200/60 hover:-translate-y-0.5"
+                  : "border-pink-200 glass-card hover:shadow-md"
               }`}
             >
               {plan.highlight && (

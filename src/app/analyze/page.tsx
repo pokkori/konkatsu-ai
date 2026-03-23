@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import PayjpModal from "@/components/PayjpModal";
 
@@ -11,6 +11,75 @@ interface AnalyzeResult {
   feelings: string;
   message: string;
   caution: string;
+}
+
+const STEPS = [
+  { label: "返信内容を解析中", duration: 1000 },
+  { label: "感情パターンを読み取り中", duration: 1500 },
+  { label: "脈あり度を算出中", duration: 1800 },
+  { label: "次のメッセージを考案中", duration: 900 },
+];
+
+function StreamingIndicator({ streamText }: { streamText: string }) {
+  const [stepIdx, setStepIdx] = useState(0);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    let idx = 0;
+    function advance() {
+      if (idx < STEPS.length - 1) {
+        timerRef.current = setTimeout(() => {
+          idx++;
+          setStepIdx(idx);
+          advance();
+        }, STEPS[idx].duration);
+      }
+    }
+    advance();
+    return () => { if (timerRef.current) clearTimeout(timerRef.current); };
+  }, []);
+
+  return (
+    <div
+      className="bg-white/80 backdrop-blur-xl rounded-3xl border border-red-100 p-6 shadow-sm space-y-5"
+      role="status"
+      aria-live="polite"
+      aria-label="AI分析中"
+    >
+      <div className="space-y-3">
+        {STEPS.map((step, i) => (
+          <div key={step.label} className="flex items-center gap-3">
+            <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 transition-all duration-500 ${
+              i < stepIdx ? "bg-red-500" : i === stepIdx ? "bg-red-500 animate-pulse" : "bg-gray-200"
+            }`}>
+              {i < stepIdx ? (
+                <svg viewBox="0 0 12 12" fill="currentColor" className="w-3.5 h-3.5 text-white" aria-hidden="true">
+                  <path d="M3.707 5.293a1 1 0 0 0-1.414 1.414l2 2a1 1 0 0 0 1.414 0l4-4a1 1 0 0 0-1.414-1.414L5 6.586 3.707 5.293z" />
+                </svg>
+              ) : i === stepIdx ? (
+                <div className="w-2 h-2 bg-white rounded-full" />
+              ) : null}
+            </div>
+            <span className={`text-sm transition-colors duration-300 ${i <= stepIdx ? "text-gray-800 font-medium" : "text-gray-400"}`}>
+              {step.label}
+            </span>
+          </div>
+        ))}
+      </div>
+      {streamText.length > 0 && (
+        <div className="border-t border-red-50 pt-4">
+          <div className="flex items-center justify-between text-xs text-gray-400 mb-2">
+            <span>分析中...</span>
+            <span>{streamText.length}文字</span>
+          </div>
+          <div className="bg-gray-50 rounded-xl p-3 max-h-28 overflow-hidden relative">
+            <p className="text-xs text-gray-600 leading-relaxed whitespace-pre-wrap line-clamp-5">{streamText}</p>
+            <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-gray-50 to-transparent" />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 function ScoreMeter({ score }: { score: number }) {
@@ -40,6 +109,7 @@ export default function AnalyzePage() {
   const [replyText, setReplyText] = useState("");
   const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
+  const [streamText, setStreamText] = useState("");
   const [result, setResult] = useState<AnalyzeResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showPaywall, setShowPaywall] = useState(false);
@@ -53,16 +123,58 @@ export default function AnalyzePage() {
     setError(null);
     setLoading(true);
     setResult(null);
+    setStreamText("");
+
     try {
       const res = await fetch("/api/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ replyText, context }),
       });
-      const data = await res.json();
-      if (data.error === "LIMIT_REACHED") { setShowPaywall(true); return; }
-      if (data.error) throw new Error(data.error);
-      setResult({ score: data.score, feelings: data.feelings, message: data.message, caution: data.caution });
+
+      if (res.status === 429) {
+        const data = await res.json().catch(() => ({}));
+        if (data.error === "LIMIT_REACHED") { setShowPaywall(true); return; }
+        throw new Error(data.error || "リクエストが多すぎます。");
+      }
+
+      if (!res.body) throw new Error("ストリームを取得できませんでした。");
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+
+        for (const line of lines) {
+          if (!line.startsWith("data: ")) continue;
+          try {
+            const parsed = JSON.parse(line.slice(6));
+            if (parsed.type === "delta") {
+              setStreamText((prev) => prev + parsed.text);
+            } else if (parsed.type === "done") {
+              setResult({
+                score: parsed.score,
+                feelings: parsed.feelings,
+                message: parsed.message,
+                caution: parsed.caution,
+              });
+              setLoading(false);
+              return;
+            } else if (parsed.type === "error") {
+              throw new Error(parsed.message);
+            }
+          } catch {
+            // JSON parse error — skip
+          }
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "エラーが発生しました。");
     } finally {
@@ -108,13 +220,14 @@ export default function AnalyzePage() {
               <button
                 onClick={() => openPayjp("プレミアムプラン ¥1,980/月")}
                 aria-label="プレミアムプランに登録して返信分析を続ける"
-                className="block w-full bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold py-3 rounded-xl hover:from-red-600 hover:to-rose-600 transition-all hover:shadow-lg hover:shadow-red-200 hover:scale-[1.02] active:scale-100">
+                className="block w-full bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold py-3 rounded-xl hover:from-red-600 hover:to-rose-600 transition-all hover:shadow-lg hover:shadow-red-200 hover:scale-[1.02] active:scale-100"
+              >
                 ¥1,980/月 — プレミアムプランで続ける
               </button>
             </div>
             <button
               onClick={() => setShowPaywall(false)}
-              aria-label="閉じる"
+              aria-label="ペイウォールを閉じる"
               className="text-xs text-gray-400 hover:text-gray-600 transition-colors"
             >
               閉じる
@@ -123,8 +236,11 @@ export default function AnalyzePage() {
         </div>
       )}
 
-      {/* ナビ — グラスモーフィズム */}
-      <nav className="sticky top-0 z-40 backdrop-blur-md bg-white/70 border-b border-red-100/60 shadow-sm" aria-label="サービスナビゲーション">
+      {/* ナビ — グラスモーフィズム強化 */}
+      <nav
+        className="sticky top-0 z-40 backdrop-blur-xl bg-white/60 border-b border-red-100/60 shadow-sm"
+        aria-label="サービスナビゲーション"
+      >
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2" aria-label="婚活AI トップページへ戻る">
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-pink-500" aria-hidden="true">
@@ -137,7 +253,7 @@ export default function AnalyzePage() {
         </div>
       </nav>
 
-      <main className="max-w-3xl mx-auto px-4 py-10">
+      <main className="max-w-3xl mx-auto px-4 py-10" aria-label="返信分析ツール">
         <div className="text-center mb-10">
           <div className="inline-flex items-center bg-red-100 text-red-700 rounded-full px-4 py-1 text-sm mb-4 font-medium">
             <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5 mr-1.5" aria-hidden="true">
@@ -152,65 +268,84 @@ export default function AnalyzePage() {
           <p className="text-gray-500">返信の内容から好感度・次のベストアクションをAIが診断</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm border border-pink-100 p-6 space-y-5" aria-label="返信分析フォーム" noValidate>
-          <div>
-            <label htmlFor="replyText" className="block text-sm font-semibold text-gray-700 mb-2">
-              相手からの返信内容 <span className="text-red-400" aria-label="必須">*</span>
-            </label>
-            <textarea
-              id="replyText"
-              value={replyText}
-              onChange={(e) => setReplyText(e.target.value)}
-              placeholder="例：そうなんですね！私もカフェ好きです。最近どこか行きましたか？"
-              rows={4}
-              required
-              aria-required="true"
-              className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-400 transition-colors resize-none"
-            />
-          </div>
-          <div>
-            <label htmlFor="context" className="block text-sm font-semibold text-gray-700 mb-2">
-              会話の流れ（任意）
-            </label>
-            <textarea
-              id="context"
-              value={context}
-              onChange={(e) => setContext(e.target.value)}
-              placeholder="例：最初のメッセージからやり取り3回目。カフェの話題で盛り上がっている。"
-              rows={2}
-              aria-describedby="context-hint"
-              className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-400 transition-colors resize-none"
-            />
-            <p id="context-hint" className="text-xs text-gray-400 mt-1">より精度の高い診断のために、これまでの会話の流れを教えてください</p>
-          </div>
-
-          {error && (
-            <div role="alert" className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">{error}</div>
-          )}
-
-          <button
-            type="submit"
-            disabled={loading}
-            aria-label={loading ? "AI分析中、お待ちください" : "返信を分析する"}
-            aria-busy={loading}
-            className="w-full bg-gradient-to-r from-red-500 to-rose-500 text-white py-4 rounded-xl font-bold text-lg hover:from-red-600 hover:to-rose-600 hover:shadow-lg hover:shadow-red-200 hover:scale-[1.01] active:scale-100 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 shadow-md"
+        {/* フォーム — グラスモーフィズム強化 */}
+        <section aria-labelledby="analyze-form-heading">
+          <h2 id="analyze-form-heading" className="sr-only">返信分析フォーム</h2>
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-md border border-white/40 p-6 space-y-5"
+            aria-label="返信分析フォーム"
+            noValidate
           >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                </svg>
-                分析中...
-              </span>
-            ) : "返信を分析する →"}
-          </button>
-        </form>
+            <div>
+              <label htmlFor="replyText" className="block text-sm font-semibold text-gray-700 mb-2">
+                相手からの返信内容 <span className="text-red-400" aria-label="必須">*</span>
+              </label>
+              <textarea
+                id="replyText"
+                value={replyText}
+                onChange={(e) => setReplyText(e.target.value)}
+                placeholder="例：そうなんですね！私もカフェ好きです。最近どこか行きましたか？"
+                rows={4}
+                required
+                aria-required="true"
+                aria-describedby="replyText-hint"
+                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-400 transition-colors resize-none bg-white/80"
+              />
+              <p id="replyText-hint" className="text-xs text-gray-400 mt-1">相手から受け取ったメッセージをそのまま貼り付けてください</p>
+            </div>
+            <div>
+              <label htmlFor="context" className="block text-sm font-semibold text-gray-700 mb-2">
+                会話の流れ（任意）
+              </label>
+              <textarea
+                id="context"
+                value={context}
+                onChange={(e) => setContext(e.target.value)}
+                placeholder="例：最初のメッセージからやり取り3回目。カフェの話題で盛り上がっている。"
+                rows={2}
+                aria-describedby="context-hint"
+                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-red-400 transition-colors resize-none bg-white/80"
+              />
+              <p id="context-hint" className="text-xs text-gray-400 mt-1">より精度の高い診断のために、これまでの会話の流れを教えてください</p>
+            </div>
 
-        {result && (
+            {error && (
+              <div role="alert" aria-live="assertive" className="bg-red-50 border border-red-200 text-red-600 text-sm px-4 py-3 rounded-xl">{error}</div>
+            )}
+
+            <button
+              type="submit"
+              disabled={loading}
+              aria-label={loading ? "AI分析中、お待ちください" : "返信を分析する"}
+              aria-busy={loading}
+              className="w-full min-h-[52px] bg-gradient-to-r from-red-500 to-rose-500 text-white py-4 rounded-xl font-bold text-lg hover:from-red-600 hover:to-rose-600 hover:shadow-lg hover:shadow-red-200 hover:scale-[1.01] active:scale-100 transition-all duration-200 disabled:opacity-50 disabled:hover:scale-100 shadow-md"
+            >
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin w-5 h-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                  </svg>
+                  分析中...
+                </span>
+              ) : "返信を分析する →"}
+            </button>
+          </form>
+        </section>
+
+        {/* Streaming インジケーター */}
+        {loading && (
+          <div className="mt-6">
+            <StreamingIndicator streamText={streamText} />
+          </div>
+        )}
+
+        {/* 分析結果 */}
+        {result && !loading && (
           <div className="mt-8 space-y-4" aria-label="分析結果" aria-live="polite">
             {/* 脈あり度メーター */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm border border-red-100 p-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-md border border-white/40 p-6">
               <h2 className="text-lg font-bold text-gray-800 mb-5 text-center">診断結果</h2>
               <div className="flex flex-col sm:flex-row items-center gap-6">
                 {result.score !== null && <ScoreMeter score={result.score} />}
@@ -227,7 +362,7 @@ export default function AnalyzePage() {
             </div>
 
             {/* ベストメッセージ */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm border border-green-100 p-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-md border border-green-100/60 p-6">
               <h3 className="text-xs font-bold text-green-600 uppercase tracking-wide mb-3 flex items-center gap-1.5">
                 <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
                   <path fillRule="evenodd" d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v7.5A1.75 1.75 0 0 1 14.25 13H8.061l-2.574 2.573A1.458 1.458 0 0 1 3 14.543V13H1.75A1.75 1.75 0 0 1 0 11.25v-7.5C0 2.784.784 2 1.75 2ZM1.5 3.75v7.5c0 .138.112.25.25.25h2a.75.75 0 0 1 .75.75v2.19l2.72-2.72a.749.749 0 0 1 .53-.22h6.5a.25.25 0 0 0 .25-.25v-7.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25Z" clipRule="evenodd" />
@@ -241,7 +376,7 @@ export default function AnalyzePage() {
                 onClick={() => copyMessage(result.message)}
                 aria-label={copied ? "コピーしました" : "メッセージをクリップボードにコピーする"}
                 aria-live="polite"
-                className="mt-3 flex items-center gap-2 text-sm text-green-600 hover:text-green-700 font-medium transition-colors"
+                className="mt-3 min-h-[44px] flex items-center gap-2 text-sm text-green-600 hover:text-green-700 font-medium transition-colors px-3 py-2 rounded-lg hover:bg-green-50"
               >
                 {copied ? (
                   <>
@@ -262,7 +397,7 @@ export default function AnalyzePage() {
             </div>
 
             {/* 注意点 */}
-            <div className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm border border-amber-100 p-6">
+            <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-md border border-amber-100/60 p-6">
               <h3 className="text-xs font-bold text-amber-600 uppercase tracking-wide mb-3 flex items-center gap-1.5">
                 <svg viewBox="0 0 16 16" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
                   <path fillRule="evenodd" d="M6.457 1.047c.659-1.234 2.427-1.234 3.086 0l6.082 11.378A1.75 1.75 0 0 1 14.082 15H1.918a1.75 1.75 0 0 1-1.543-2.575Zm1.763.707a.25.25 0 0 0-.44 0L1.698 13.132a.25.25 0 0 0 .22.368h12.164a.25.25 0 0 0 .22-.368Zm.53 3.996v2.5a.75.75 0 0 1-1.5 0v-2.5a.75.75 0 0 1 1.5 0ZM9 11a1 1 0 1 1-2 0 1 1 0 0 1 2 0Z" clipRule="evenodd" />
@@ -273,9 +408,9 @@ export default function AnalyzePage() {
             </div>
 
             <button
-              onClick={() => { setResult(null); setReplyText(""); setContext(""); }}
+              onClick={() => { setResult(null); setReplyText(""); setContext(""); setStreamText(""); }}
               aria-label="フォームをリセットして別の返信を分析する"
-              className="w-full py-3 border-2 border-red-200 text-red-500 rounded-xl font-medium hover:bg-red-50 transition-colors"
+              className="w-full min-h-[52px] py-3 border-2 border-red-200 text-red-500 rounded-xl font-medium hover:bg-red-50 transition-colors"
             >
               別の返信を分析する
             </button>

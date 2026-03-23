@@ -258,7 +258,7 @@ export default function ProfilePage() {
       )}
 
       {/* ナビ — グラスモーフィズム */}
-      <nav className="sticky top-0 z-40 backdrop-blur-md bg-white/70 border-b border-pink-100/60 shadow-sm" aria-label="サービスナビゲーション">
+      <nav className="sticky top-0 z-40 glass-nav border-b border-pink-100/50 shadow-sm" aria-label="サービスナビゲーション">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2" aria-label="婚活AI トップページへ戻る">
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-pink-500" aria-hidden="true">
@@ -289,7 +289,7 @@ export default function ProfilePage() {
         <div className="grid md:grid-cols-5 gap-8">
           {/* フォーム */}
           <div className="md:col-span-3">
-            <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm border border-pink-100 p-6 space-y-5" aria-label="プロフィール添削フォーム" noValidate>
+            <form onSubmit={handleSubmit} className="glass-card rounded-3xl shadow-md border-pink-100/60 p-6 space-y-5" aria-label="プロフィール添削フォーム" noValidate>
               {/* アプリ選択 */}
               <fieldset>
                 <legend className="block text-sm font-semibold text-gray-700 mb-2">
@@ -438,7 +438,7 @@ export default function ProfilePage() {
 
           {/* サイドパネル */}
           <div className="md:col-span-2 space-y-4">
-            <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-pink-100 p-5 shadow-sm">
+            <div className="glass-card rounded-3xl border-pink-100/60 p-5 shadow-sm">
               <h2 className="font-bold text-gray-800 mb-3">添削の効果</h2>
               <ul className="space-y-2 text-sm text-gray-600" role="list">
                 <li className="flex items-start gap-2">
@@ -494,7 +494,7 @@ export default function ProfilePage() {
 
         {/* 結果表示 */}
         {result && !loading && (
-          <div className="mt-8 bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm border border-green-200 p-6">
+          <div className="mt-8 glass-card rounded-3xl shadow-md border border-green-200/60 p-6">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-8 h-8 bg-green-100 rounded-xl flex items-center justify-center">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} className="w-5 h-5 text-green-600" aria-hidden="true">

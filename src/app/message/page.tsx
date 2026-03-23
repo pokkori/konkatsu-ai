@@ -282,7 +282,7 @@ export default function MessagePage() {
       )}
 
       {/* ナビ — グラスモーフィズム */}
-      <nav className="sticky top-0 z-40 backdrop-blur-md bg-white/70 border-b border-pink-100/60 shadow-sm" aria-label="サービスナビゲーション">
+      <nav className="sticky top-0 z-40 glass-nav border-b border-pink-100/50 shadow-sm" aria-label="サービスナビゲーション">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-4">
           <Link href="/" className="flex items-center gap-2" aria-label="婚活AI トップページへ戻る">
             <svg viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-pink-500" aria-hidden="true">
@@ -312,7 +312,7 @@ export default function MessagePage() {
 
         <div className="grid md:grid-cols-5 gap-8">
           <div className="md:col-span-3">
-            <form onSubmit={handleSubmit} className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-sm border border-pink-100 p-6 space-y-5" aria-label="メッセージ生成フォーム" noValidate>
+            <form onSubmit={handleSubmit} className="glass-card rounded-3xl shadow-md border-pink-100/60 p-6 space-y-5" aria-label="メッセージ生成フォーム" noValidate>
               <div>
                 <label htmlFor="targetProfile" className="block text-sm font-semibold text-gray-700 mb-2">
                   相手のプロフィール情報 <span className="text-red-400" aria-label="必須">*</span>
@@ -405,7 +405,7 @@ export default function MessagePage() {
               <StreamingIndicator streamText={streamText} />
             ) : (
               <>
-                <div className="bg-white/80 backdrop-blur-sm rounded-3xl border border-pink-100 p-5 shadow-sm">
+                <div className="glass-card rounded-3xl border-pink-100/60 p-5 shadow-sm">
                   <h2 className="font-bold text-gray-800 mb-3">生成されるもの</h2>
                   <ul className="space-y-2 text-sm text-gray-600" role="list">
                     <li className="flex items-start gap-2">
@@ -444,7 +444,7 @@ export default function MessagePage() {
             </h2>
             <div className="grid gap-4">
               {patterns.map((p, i) => (
-                <div key={i} className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-sm border border-rose-100 p-5 hover:shadow-md transition-shadow">
+                <div key={i} className="glass-card rounded-3xl shadow-sm border-rose-100/60 p-5 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <span className="bg-rose-100 text-rose-700 text-xs font-bold px-2 py-1 rounded-full">パターン {i + 1}</span>
