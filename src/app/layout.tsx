@@ -5,6 +5,15 @@ const SITE_URL = "https://konkatsu-ai.vercel.app";
 const TITLE = "婚活AI｜マッチングアプリのプロフィール添削・メッセージ生成・返信分析をAIが無料サポート";
 const DESC = "Pairs・Tinder・withなど全アプリ対応。AIがマッチングアプリのプロフィールを添削しマッチ数平均2.8倍に。メッセージ3パターン即生成・返信の脈あり度も分析。登録不要・無料で今すぐ試せる婚活AIサービス。";
 
+const breadcrumbLd = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    { "@type": "ListItem", "position": 1, "name": "ホーム", "item": SITE_URL },
+    { "@type": "ListItem", "position": 2, "name": "婚活AIツール", "item": `${SITE_URL}/profile` },
+  ],
+};
+
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -98,6 +107,10 @@ export default function RootLayout({
   return (
     <html lang="ja">
       <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbLd) }}
+        />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
