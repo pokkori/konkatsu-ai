@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import PayjpModal from "@/components/PayjpModal";
 
@@ -70,6 +70,27 @@ const stats = [
 
 export default function Home() {
   const [showModal, setShowModal] = useState(false);
+  const [streakCount, setStreakCount] = useState(0);
+
+  useEffect(() => {
+    try {
+      const today = new Date().toDateString();
+      const raw = localStorage.getItem("konkatsu_streak");
+      const data = raw ? JSON.parse(raw) : { count: 0, last: "" };
+      const yesterday = new Date(Date.now() - 86400000).toDateString();
+      if (data.last === today) {
+        setStreakCount(data.count);
+      } else if (data.last === yesterday) {
+        const updated = { count: data.count + 1, last: today };
+        localStorage.setItem("konkatsu_streak", JSON.stringify(updated));
+        setStreakCount(updated.count);
+      } else {
+        const updated = { count: 1, last: today };
+        localStorage.setItem("konkatsu_streak", JSON.stringify(updated));
+        setStreakCount(1);
+      }
+    } catch {}
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
@@ -117,6 +138,12 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 max-w-2xl mx-auto">
+          {streakCount >= 2 && (
+            <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4 shadow-sm">
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-orange-500" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/></svg>
+              <span aria-label={`${streakCount}日連続利用中`}>{streakCount}日連続利用中</span>
+            </div>
+          )}
           <p className="text-sm font-semibold text-pink-500 mb-3 tracking-widest uppercase">AI Powered Matching Support</p>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             AIがあなたの恋愛を<br />
