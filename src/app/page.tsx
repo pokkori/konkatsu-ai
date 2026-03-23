@@ -314,6 +314,7 @@ export default function Home() {
         <nav aria-label="フッターナビゲーション" className="flex justify-center gap-6 mb-4">
           <Link href="/legal" aria-label="特定商取引法に基づく表記を見る" className="hover:text-pink-500 transition-colors">特定商取引法</Link>
           <Link href="/privacy" aria-label="プライバシーポリシーを見る" className="hover:text-pink-500 transition-colors">プライバシーポリシー</Link>
+          <Link href="/terms" aria-label="利用規約を見る" className="hover:text-pink-500 transition-colors">利用規約</Link>
           <Link href="/pricing" aria-label="料金プランを見る" className="hover:text-pink-500 transition-colors">料金</Link>
         </nav>
         <p>© 2025 婚活AI. All rights reserved.</p>

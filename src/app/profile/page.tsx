@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import PayjpModal from "@/components/PayjpModal";
+import { updateStreak, loadStreak } from "@/lib/streak";
 
 const FREE_LIMIT = 1;
 const STORAGE_KEY = "konkatsu_profile_count";
@@ -107,10 +108,13 @@ export default function ProfilePage() {
   const [showPayjp, setShowPayjp] = useState(false);
   const [payjpPlanLabel, setPayjpPlanLabel] = useState("");
   const [copied, setCopied] = useState(false);
+  const [streakCount, setStreakCount] = useState(0);
 
   useEffect(() => {
     fetch("/api/auth/status").then((r) => r.json()).then((d) => setIsPremium(d.isPremium));
     setUsageCount(Number(localStorage.getItem(STORAGE_KEY) || "0"));
+    const s = loadStreak("konkatsu");
+    setStreakCount(s.count);
   }, []);
 
   const toggleGoal = (id: string) => {
@@ -181,6 +185,8 @@ export default function ProfilePage() {
               localStorage.setItem(STORAGE_KEY, String(next));
               setResult(accumulated);
               setLoading(false);
+              const s = updateStreak("konkatsu");
+              setStreakCount(s.count);
               return;
             } else if (parsed.type === "error") {
               throw new Error(parsed.message);
@@ -268,6 +274,11 @@ export default function ProfilePage() {
           </Link>
           <span className="text-gray-300" aria-hidden="true">/</span>
           <span className="text-gray-600 text-sm font-medium" aria-current="page">プロフィール添削</span>
+          {streakCount >= 2 && (
+            <span className="ml-auto text-xs font-medium text-orange-600 bg-orange-50 border border-orange-200 px-2 py-1 rounded-full" aria-label={`${streakCount}日連続利用中`}>
+              {streakCount}日連続
+            </span>
+          )}
         </div>
       </nav>
 
