@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import PayjpModal from "@/components/PayjpModal";
+import { updateStreak, loadStreak, getStreakMilestoneMessage, type StreakData } from "@/lib/streak";
 
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -116,6 +117,17 @@ export default function AnalyzePage() {
   const [copied, setCopied] = useState(false);
   const [showPayjp, setShowPayjp] = useState(false);
   const [payjpPlanLabel, setPayjpPlanLabel] = useState("");
+  const [streak, setStreak] = useState<StreakData | null>(null);
+  const [streakMsg, setStreakMsg] = useState<string | null>(null);
+  const [history, setHistory] = useState<Array<{ replyText: string; score: number | null; feelings: string; timestamp: string }>>([]);
+
+  useEffect(() => {
+    setStreak(loadStreak("konkatsu"));
+    try {
+      const stored = localStorage.getItem("konkatsu_history");
+      if (stored) setHistory(JSON.parse(stored));
+    } catch { /* noop */ }
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -159,12 +171,26 @@ export default function AnalyzePage() {
             if (parsed.type === "delta") {
               setStreamText((prev) => prev + parsed.text);
             } else if (parsed.type === "done") {
-              setResult({
+              const newResult = {
                 score: parsed.score,
                 feelings: parsed.feelings,
                 message: parsed.message,
                 caution: parsed.caution,
-              });
+              };
+              setResult(newResult);
+              // ストリーク更新
+              const s = updateStreak("konkatsu");
+              setStreak(s);
+              const msg = getStreakMilestoneMessage(s.count);
+              if (msg) setStreakMsg(msg);
+              // 分析履歴保存
+              try {
+                const stored = localStorage.getItem("konkatsu_history");
+                const prev: Array<{ replyText: string; score: number | null; feelings: string; timestamp: string }> = stored ? JSON.parse(stored) : [];
+                const next = [{ replyText, score: parsed.score, feelings: parsed.feelings, timestamp: new Date().toLocaleString("ja-JP") }, ...prev].slice(0, 5);
+                localStorage.setItem("konkatsu_history", JSON.stringify(next));
+                setHistory(next);
+              } catch { /* noop */ }
               setLoading(false);
               return;
             } else if (parsed.type === "error") {
@@ -266,6 +292,19 @@ export default function AnalyzePage() {
             <span className="bg-gradient-to-r from-red-600 to-rose-500 bg-clip-text text-transparent">脈あり度を診断</span>
           </h1>
           <p className="text-gray-500">返信の内容から好感度・次のベストアクションをAIが診断</p>
+          {streak && streak.count > 0 && (
+            <div className="mt-2 inline-flex items-center gap-2 bg-pink-50 border border-pink-200 rounded-full px-3 py-1 text-sm">
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 text-pink-500" aria-hidden="true">
+                <path d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/>
+              </svg>
+              <span className="text-pink-700 font-medium">{streak.count}日連続利用中</span>
+            </div>
+          )}
+          {streakMsg && (
+            <div role="alert" aria-live="polite" className="mt-2 inline-flex items-center gap-2 bg-yellow-50 border border-yellow-300 rounded-full px-3 py-1 text-sm text-yellow-700 font-medium">
+              {streakMsg}
+            </div>
+          )}
         </div>
 
         {/* フォーム — グラスモーフィズム強化 */}
@@ -415,6 +454,42 @@ export default function AnalyzePage() {
               別の返信を分析する
             </button>
           </div>
+        )}
+
+        {/* 分析履歴パネル */}
+        {history.length > 0 && (
+          <section aria-labelledby="history-heading" className="mt-10">
+            <h2 id="history-heading" className="text-base font-bold text-gray-700 mb-3 flex items-center gap-2">
+              <svg viewBox="0 0 16 16" fill="currentColor" className="w-4 h-4 text-pink-400" aria-hidden="true">
+                <path fillRule="evenodd" d="M1 8a7 7 0 1 1 14 0A7 7 0 0 1 1 8Zm7-6.75a6.75 6.75 0 1 0 0 13.5A6.75 6.75 0 0 0 8 1.25ZM8.75 5.5a.75.75 0 0 0-1.5 0v2.75H5.5a.75.75 0 0 0 0 1.5h2.25a.75.75 0 0 0 .75-.75V5.5Z" clipRule="evenodd"/>
+              </svg>
+              過去の分析履歴
+            </h2>
+            <div className="space-y-3">
+              {history.map((item, idx) => {
+                const scoreColor = item.score !== null ? (item.score >= 70 ? "text-green-600" : item.score >= 40 ? "text-amber-600" : "text-red-500") : "text-gray-500";
+                const scoreLabel = item.score !== null ? (item.score >= 70 ? "脈あり" : item.score >= 40 ? "様子見" : "厳しめ") : "-";
+                return (
+                  <div
+                    key={idx}
+                    className="backdrop-blur-sm bg-white/80 border border-white/40 rounded-2xl p-4 shadow-sm"
+                    aria-label={`履歴${idx + 1}: ${item.timestamp} スコア${item.score ?? "-"}%`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs text-gray-400">{item.timestamp}</span>
+                      {item.score !== null && (
+                        <span className={`text-sm font-bold ${scoreColor}`}>{item.score}% — {scoreLabel}</span>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-700 line-clamp-2 leading-relaxed">{item.replyText}</p>
+                    {item.feelings && (
+                      <p className="text-xs text-gray-500 mt-1 line-clamp-1">{item.feelings}</p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </section>
         )}
       </main>
     </div>
