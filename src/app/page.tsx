@@ -267,6 +267,21 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Xシェアセクション */}
+      <section className="py-8 text-center">
+        <p className="text-sm text-gray-400 mb-3">婚活AIを友達に教える</p>
+        <a
+          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('婚活AIでプロフィール添削・メッセージ改善・相性診断を試してみました！AIが婚活をサポートしてくれて便利 #婚活AI #婚活 #マッチングアプリ https://konkatsu-ai.vercel.app')}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="婚活AIをXでシェアする"
+          className="inline-flex items-center gap-2 bg-black hover:bg-gray-900 text-white px-5 py-3 rounded-xl text-sm font-semibold transition-colors"
+        >
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          Xでシェア
+        </a>
+      </section>
+
       {/* フッター */}
       <footer className="text-center py-10 text-sm text-gray-400 border-t border-pink-100/60">
         <nav aria-label="フッターナビゲーション" className="flex justify-center gap-6 mb-4">
