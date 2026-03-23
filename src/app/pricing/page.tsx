@@ -8,6 +8,7 @@ export default function PricingPage() {
         <p className="text-gray-500 mb-6">こちらのページで料金プランをご確認いただけます。</p>
         <Link
           href="/#pricing"
+          aria-label="トップページの料金プランセクションを見る"
           className="bg-gradient-to-r from-pink-500 to-red-500 text-white px-8 py-3 rounded-xl font-bold hover:from-pink-600 hover:to-red-600 transition-all"
         >
           料金プランを見る

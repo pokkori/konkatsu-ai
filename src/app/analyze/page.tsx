@@ -446,13 +446,27 @@ export default function AnalyzePage() {
               <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{result.caution}</p>
             </div>
 
-            <button
-              onClick={() => { setResult(null); setReplyText(""); setContext(""); setStreamText(""); }}
-              aria-label="フォームをリセットして別の返信を分析する"
-              className="w-full min-h-[52px] py-3 border-2 border-red-200 text-red-500 rounded-xl font-medium hover:bg-red-50 transition-colors"
-            >
-              別の返信を分析する
-            </button>
+            <div className="flex flex-wrap gap-3">
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("婚活AIでパートナー探しのアドバイスをもらいました！ #婚活AI #婚活 https://konkatsu-ai.vercel.app")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="婚活AIのアドバイスをXにシェアする（新しいタブで開きます）"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-black hover:bg-gray-800 text-white font-medium transition-colors"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.732-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Xでシェア
+              </a>
+              <button
+                onClick={() => { setResult(null); setReplyText(""); setContext(""); setStreamText(""); }}
+                aria-label="フォームをリセットして別の返信を分析する"
+                className="flex-1 min-h-[44px] py-3 border-2 border-red-200 text-red-500 rounded-xl font-medium hover:bg-red-50 transition-colors"
+              >
+                別の返信を分析する
+              </button>
+            </div>
           </div>
         )}
 

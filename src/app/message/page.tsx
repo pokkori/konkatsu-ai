@@ -482,13 +482,27 @@ export default function MessagePage() {
                 </div>
               ))}
             </div>
-            <button
-              onClick={() => { setPatterns(null); setForm({ targetProfile: "", purpose: "first", character: "bright" }); setStreamText(""); }}
-              aria-label="フォームをリセットしてもう一度メッセージを生成する"
-              className="mt-4 w-full py-3 border-2 border-rose-200 text-rose-500 rounded-xl font-medium hover:bg-rose-50 transition-colors"
-            >
-              もう一度生成する
-            </button>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a
+                href={`https://twitter.com/intent/tweet?text=${encodeURIComponent("婚活AIでパートナー探しのアドバイスをもらいました！ #婚活AI #婚活 https://konkatsu-ai.vercel.app")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="婚活AIのアドバイスをXにシェアする（新しいタブで開きます）"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-black hover:bg-gray-800 text-white font-medium transition-colors"
+              >
+                <svg viewBox="0 0 24 24" fill="currentColor" className="w-3.5 h-3.5" aria-hidden="true">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.742l7.732-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                </svg>
+                Xでシェア
+              </a>
+              <button
+                onClick={() => { setPatterns(null); setForm({ targetProfile: "", purpose: "first", character: "bright" }); setStreamText(""); }}
+                aria-label="フォームをリセットしてもう一度メッセージを生成する"
+                className="flex-1 py-3 border-2 border-rose-200 text-rose-500 rounded-xl font-medium hover:bg-rose-50 transition-colors"
+              >
+                もう一度生成する
+              </button>
+            </div>
           </div>
         )}
       </main>
