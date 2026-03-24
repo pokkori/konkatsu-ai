@@ -139,7 +139,7 @@ export default function Home() {
 
         <div className="relative z-10 max-w-2xl mx-auto">
           {streakCount >= 2 && (
-            <div className="inline-flex items-center gap-1.5 bg-orange-50 border border-orange-200 text-orange-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4 shadow-sm">
+            <div className="inline-flex items-center gap-1.5 text-orange-700 text-sm font-semibold px-4 py-1.5 rounded-full mb-4 shadow-sm" style={{ background: 'rgba(255,237,213,0.82)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(253,186,116,0.5)' }}>
               <svg viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4 text-orange-500" aria-hidden="true"><path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 .55.45 1 1 1h6c.55 0 1-.45 1-1v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/></svg>
               <span aria-label={`${streakCount}日連続利用中`}>{streakCount}日連続利用中</span>
             </div>
@@ -239,6 +239,28 @@ export default function Home() {
         </div>
       </section>
 
+      {/* 価値換算コピー */}
+      <section className="py-10 px-6 bg-pink-50 border-y border-pink-100">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-pink-500 font-bold text-sm mb-3">マッチングアプリ代と比べてみる</p>
+          <h2 className="text-xl font-bold text-gray-900 mb-6">毎月のマッチングアプリ代<span className="text-gray-400">¥3,000〜</span>と比べたら、<br /><span className="text-pink-600">月¥1,980で自己PRが磨き放題。</span></h2>
+          <div className="grid sm:grid-cols-3 gap-4 text-left">
+            {[
+              { label: "Pairs（月額）", price: "¥3,590〜", note: "マッチングできるだけ" },
+              { label: "婚活コンサル", price: "¥50,000〜", note: "対面・予約が必要" },
+              { label: "婚活AI（月額）", price: "¥1,980", note: "添削・生成・分析が無制限" },
+            ].map((item, i) => (
+              <div key={i} className={`rounded-xl p-4 border ${i === 2 ? "bg-pink-600 border-pink-500 text-white" : "bg-white border-pink-100"}`}>
+                <div className={`text-xs font-bold mb-1 ${i === 2 ? "text-pink-200" : "text-gray-500"}`}>{item.label}</div>
+                <div className={`text-2xl font-black mb-1 ${i === 2 ? "text-yellow-300" : "text-gray-400"}`}>{item.price}</div>
+                <div className={`text-xs ${i === 2 ? "text-pink-100" : "text-gray-400"}`}>{item.note}</div>
+              </div>
+            ))}
+          </div>
+          <p className="text-sm text-gray-500 mt-4">プロフィール添削でマッチ数が平均2.8倍になれば、アプリ代の元が取れます。</p>
+        </div>
+      </section>
+
       {/* 料金セクション */}
       <section id="pricing" className="py-16 px-6" aria-labelledby="pricing-heading">
         <h2 id="pricing-heading" className="text-2xl font-bold text-center text-gray-900 mb-12">料金プラン</h2>
@@ -296,17 +318,20 @@ export default function Home() {
 
       {/* Xシェアセクション */}
       <section className="py-8 text-center">
+        <div className="inline-block rounded-2xl px-6 py-4 mb-2 mx-auto" style={{ background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(252,231,243,0.6)' }}>
         <p className="text-sm text-gray-400 mb-3">婚活AIを友達に教える</p>
         <a
           href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('婚活AIでプロフィール添削・メッセージ改善・相性診断を試してみました！AIが婚活をサポートしてくれて便利 #婚活AI #婚活 #マッチングアプリ https://konkatsu-ai.vercel.app')}`}
           target="_blank"
           rel="noopener noreferrer"
           aria-label="婚活AIをXでシェアする"
-          className="inline-flex items-center gap-2 bg-black hover:bg-gray-900 text-white px-5 py-3 rounded-xl text-sm font-semibold transition-colors"
+          className="inline-flex items-center gap-2 text-white px-5 py-3 rounded-xl text-sm font-semibold transition-colors"
+          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)' }}
         >
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
           Xでシェア
         </a>
+        </div>
       </section>
 
       {/* フッター */}
