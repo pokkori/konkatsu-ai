@@ -7,6 +7,7 @@ import { AdBanner } from "@/components/AdBanner";
 import { ShareButtons } from "@/components/ShareButtons";
 import { UsageCounter } from "@/components/UsageCounter";
 import { CrossSell } from "@/components/CrossSell";
+import { TrustBadge } from "@/components/TrustBadge";
 
 const features = [
   {
@@ -187,6 +188,7 @@ export default function Home() {
 
           {/* CTA ボタン */}
           <div className="max-w-xs mx-auto mb-4"><UsageCounter /></div>
+          <div className="mb-4"><TrustBadge /></div>
           <Link
             href="/profile"
             aria-label="プロフィール添削を無料で試す"
