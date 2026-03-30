@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
 import { GoogleAdScript } from "@/components/GoogleAdScript";
 import "./globals.css";
+import { InstallPrompt } from "@/components/InstallPrompt";
 
 const SITE_URL = "https://konkatsu-ai.vercel.app";
 const TITLE = "婚活AI｜マッチングアプリのプロフィール添削・メッセージ生成・返信分析をAIが無料サポート";
@@ -120,6 +121,7 @@ export default function RootLayout({
       </head>
       <body className="antialiased">
         {children}
+        <InstallPrompt />
         <Analytics />
         <GoogleAdScript />
       </body>

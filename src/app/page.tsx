@@ -5,6 +5,7 @@ import Link from "next/link";
 import PayjpModal from "@/components/PayjpModal";
 import { AdBanner } from "@/components/AdBanner";
 import { ShareButtons } from "@/components/ShareButtons";
+import { UsageCounter } from "@/components/UsageCounter";
 
 const features = [
   {
@@ -184,6 +185,7 @@ export default function Home() {
           </p>
 
           {/* CTA ボタン */}
+          <div className="max-w-xs mx-auto mb-4"><UsageCounter /></div>
           <Link
             href="/profile"
             aria-label="プロフィール添削を無料で試す"
