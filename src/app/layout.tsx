@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Analytics } from "@vercel/analytics/react";
+import { GoogleAdScript } from "@/components/GoogleAdScript";
 import "./globals.css";
 
 const SITE_URL = "https://konkatsu-ai.vercel.app";
@@ -120,6 +121,7 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         <Analytics />
+        <GoogleAdScript />
       </body>
     </html>
   );

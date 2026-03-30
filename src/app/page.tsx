@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import PayjpModal from "@/components/PayjpModal";
+import { AdBanner } from "@/components/AdBanner";
+import { ShareButtons } from "@/components/ShareButtons";
 
 const features = [
   {
@@ -63,8 +65,8 @@ const plans = [
 ];
 
 const stats = [
-  { label: "マッチ数平均", value: "2.8倍", sub: "添削後の実績" },
-  { label: "返信率", value: "80%超", sub: "メッセージ生成" },
+  { label: "プロフィール添削", value: "改善サポート", sub: "マッチ数の向上を支援" },
+  { label: "返信率", value: "向上をサポート", sub: "メッセージ生成" },
   { label: "利用者数", value: "10,000+", sub: "累計ユーザー" },
 ];
 
@@ -211,10 +213,11 @@ export default function Home() {
 
       {/* 社会的証明セクション */}
       <section className="py-12 px-6 max-w-4xl mx-auto" aria-labelledby="proof-heading">
-        <h2 id="proof-heading" className="text-xl font-bold text-center text-gray-800 mb-8">使った人の声</h2>
+        <h2 id="proof-heading" className="text-xl font-bold text-center text-gray-800 mb-2">使った人の声</h2>
+        <p className="text-xs text-gray-400 text-center mb-8">※個人の感想です。効果を保証するものではありません。</p>
         <div className="grid md:grid-cols-3 gap-4">
           {[
-            { text: "プロフィールを添削してもらったら、マッチ数が3倍になりました！", name: "30代・会社員" },
+            { text: "プロフィールの改善でマッチ数が増えました。自分では気づけない改善点を指摘してもらえて助かりました。", name: "30代・会社員" },
             { text: "メッセージ生成が秀逸。3パターン全部使えるクオリティで返信率が上がった。", name: "28歳・エンジニア" },
             { text: "返信分析で脈なしと分かって次の人に集中できた。時短すぎる。", name: "25歳・看護師" },
           ].map((v, i) => (
@@ -257,7 +260,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <p className="text-sm text-gray-500 mt-4">プロフィール添削でマッチ数が平均2.8倍になれば、アプリ代の元が取れます。</p>
+          <p className="text-sm text-gray-500 mt-4">プロフィール添削でマッチ数が改善されれば、アプリ代の元が取れます。※効果には個人差があります。</p>
         </div>
       </section>
 
@@ -316,22 +319,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Xシェアセクション */}
+      {/* シェアセクション */}
       <section className="py-8 text-center">
-        <div className="inline-block rounded-2xl px-6 py-4 mb-2 mx-auto" style={{ background: 'rgba(255,255,255,0.65)', backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', border: '1px solid rgba(252,231,243,0.6)' }}>
         <p className="text-sm text-gray-400 mb-3">婚活AIを友達に教える</p>
-        <a
-          href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('婚活AIでプロフィール添削・メッセージ改善・相性診断を試してみました！AIが婚活をサポートしてくれて便利 #婚活AI #婚活 #マッチングアプリ https://konkatsu-ai.vercel.app')}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="婚活AIをXでシェアする"
-          className="inline-flex items-center gap-2 text-white px-5 py-3 rounded-xl text-sm font-semibold transition-colors"
-          style={{ background: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.1)' }}
-        >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.737-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-          Xでシェア
-        </a>
-        </div>
+        <ShareButtons url="https://konkatsu-ai.vercel.app" text="婚活AIを使ってみた！" hashtags="婚活AI" />
       </section>
 
       {/* フッター */}
@@ -345,6 +336,7 @@ export default function Home() {
         <p>© 2025 婚活AI. All rights reserved.</p>
       </footer>
 
+      <AdBanner slot="" />
       {showModal && (
         <PayjpModal
           publicKey={process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY!}
