@@ -5,7 +5,7 @@ import Link from "next/link";
 import PayjpModal from "@/components/PayjpModal";
 import { updateStreak, loadStreak } from "@/lib/streak";
 
-const FREE_LIMIT = 1;
+const FREE_LIMIT = 3;
 const STORAGE_KEY = "konkatsu_profile_count";
 const PAYJP_PUBLIC_KEY = process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY ?? "";
 
@@ -242,7 +242,7 @@ export default function ProfilePage() {
             </div>
             <h2 id="paywall-title" className="text-xl font-bold text-gray-800 mb-2">無料枠を使い切りました</h2>
             <p className="text-gray-500 text-sm mb-6">
-              無料プランはプロフィール添削1回まで。<br />
+              無料プランはプロフィール添削3回まで。<br />
               プレミアムプランで無制限に使えます。
             </p>
             <button
@@ -489,7 +489,7 @@ export default function ProfilePage() {
                 <p className="text-xs text-pink-600 font-medium mb-1">残り無料回数</p>
                 <p className="text-2xl font-bold text-pink-600">
                   {Math.max(0, FREE_LIMIT - usageCount)}
-                  <span className="text-sm font-normal text-pink-400"> / 1回</span>
+                  <span className="text-sm font-normal text-pink-400"> / 3回</span>
                 </p>
               </div>
             )}

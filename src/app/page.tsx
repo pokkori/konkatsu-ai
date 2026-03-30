@@ -6,6 +6,7 @@ import PayjpModal from "@/components/PayjpModal";
 import { AdBanner } from "@/components/AdBanner";
 import { ShareButtons } from "@/components/ShareButtons";
 import { UsageCounter } from "@/components/UsageCounter";
+import { CrossSell } from "@/components/CrossSell";
 
 const features = [
   {
@@ -48,7 +49,7 @@ const plans = [
   {
     name: "無料",
     price: "0",
-    features: ["プロフィール添削 1回", "メッセージ生成 3回", "返信分析 1回"],
+    features: ["プロフィール添削 3回", "メッセージ生成 3回", "返信分析 3回"],
     cta: "無料で始める",
     isPaid: false,
     href: "/profile",
@@ -191,11 +192,12 @@ export default function Home() {
             aria-label="プロフィール添削を無料で試す"
             className="group inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-700 hover:to-rose-600 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 transition-all duration-300 hover:scale-105 active:scale-100"
           >
-            無料で試してみる
+            無料でAI婚活診断
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 transition-transform group-hover:translate-x-1" aria-hidden="true">
               <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
             </svg>
           </Link>
+          <p className="text-xs opacity-60 mt-2">※登録不要・3回まで無料</p>
           <p className="text-sm text-gray-400 mt-4">クレジットカード不要・登録1分</p>
 
           {/* 統計バッジ */}
@@ -373,6 +375,8 @@ export default function Home() {
       </section>
 
       {/* フッター */}
+      <CrossSell currentService="婚活AI" />
+
       <footer className="text-center py-10 text-sm text-gray-400 border-t border-pink-100/60">
         <nav aria-label="フッターナビゲーション" className="flex justify-center gap-6 mb-4">
           <Link href="/legal" aria-label="特定商取引法に基づく表記を見る" className="hover:text-pink-500 transition-colors">特定商取引法</Link>

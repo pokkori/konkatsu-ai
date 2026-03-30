@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
+import { Noto_Sans_JP } from "next/font/google";
 import { Analytics } from "@vercel/analytics/react";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { GoogleAdScript } from "@/components/GoogleAdScript";
 import "./globals.css";
 import { InstallPrompt } from "@/components/InstallPrompt";
+
+const notoSansJP = Noto_Sans_JP({
+  subsets: ["latin"],
+  weight: ["400", "700"],
+  display: "swap",
+  variable: "--font-noto-sans-jp",
+});
 
 const SITE_URL = "https://konkatsu-ai.vercel.app";
 const TITLE = "婚活AI｜マッチングアプリのプロフィール添削・メッセージ生成・返信分析をAIが無料サポート";
@@ -61,7 +70,7 @@ const jsonLd = {
           "name": "無料で使えますか？料金はいくらですか？",
           "acceptedAnswer": {
             "@type": "Answer",
-            "text": "登録不要・無料で利用できます（プロフィール添削1回・メッセージ生成3回・返信分析1回）。プレミアムプラン（¥1,980/月）で全機能無制限になります。Pairs（¥3,590/月〜）と比較して大幅に低価格です。"
+            "text": "登録不要・無料で利用できます（プロフィール添削3回・メッセージ生成3回・返信分析3回）。プレミアムプラン（¥1,980/月）で全機能無制限になります。Pairs（¥3,590/月〜）と比較して大幅に低価格です。"
           }
         },
         {
@@ -108,7 +117,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ja">
+    <html lang="ja" className={notoSansJP.variable}>
       <head>
         <script
           type="application/ld+json"
@@ -123,6 +132,7 @@ export default function RootLayout({
         {children}
         <InstallPrompt />
         <Analytics />
+        <SpeedInsights />
         <GoogleAdScript />
       </body>
     </html>

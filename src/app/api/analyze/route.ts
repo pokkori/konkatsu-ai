@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 
 export const dynamic = 'force-dynamic'
 
-const FREE_LIMIT = 1
+const FREE_LIMIT = 3
 const COOKIE_KEY = 'konkatsu_analyze_count'
 
 const rateLimit = new Map<string, { count: number; resetAt: number }>()
