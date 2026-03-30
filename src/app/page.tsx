@@ -96,6 +96,33 @@ export default function Home() {
 
   return (
     <div className="min-h-screen" style={{ background: 'radial-gradient(ellipse at 20% 10%, rgba(244, 114, 182, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(251, 113, 133, 0.06) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(253, 164, 175, 0.04) 0%, transparent 60%), linear-gradient(135deg, #FFF1F2, #FFF5F5, #FEF2F2)' }}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: [
+              { '@type': 'Question', name: 'このサービスは無料で使えますか？', acceptedAnswer: { '@type': 'Answer', text: '基本機能は無料で3回までご利用いただけます。' } },
+              { '@type': 'Question', name: '個人情報は安全ですか？', acceptedAnswer: { '@type': 'Answer', text: '入力された情報はAI分析のみに使用し、第三者への提供は行いません。通信は全てSSL暗号化されています。' } },
+              { '@type': 'Question', name: '返金はできますか？', acceptedAnswer: { '@type': 'Answer', text: 'デジタルサービスの性質上、利用開始後の返金は原則としてお受けしておりません。' } },
+            ],
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: '婚活AI',
+            operatingSystem: 'Web',
+            applicationCategory: 'LifestyleApplication',
+            offers: { '@type': 'Offer', price: 0, priceCurrency: 'JPY' },
+          }).replace(/</g, '\\u003c'),
+        }}
+      />
       {/* ナビゲーション — グラスモーフィズム */}
       <nav
         className="sticky top-0 z-40 glass-nav border-b border-pink-100/50 shadow-sm"
@@ -325,6 +352,24 @@ export default function Home() {
         <ShareButtons url="https://konkatsu-ai.vercel.app" text="婚活AIを使ってみた！" hashtags="婚活AI" />
       </section>
 
+      {/* FAQ */}
+      <section className="px-4 py-12" aria-labelledby="faq-heading">
+        <div className="max-w-3xl mx-auto">
+          <h2 id="faq-heading" className="text-2xl font-bold text-gray-900 mb-8 text-center">よくある質問</h2>
+          {[
+            { q: 'このサービスは無料で使えますか？', a: '基本機能は無料で3回までご利用いただけます。それ以降はプレミアムプランをご利用ください。' },
+            { q: 'AIが生成したプロフィールはそのまま使えますか？', a: 'AIの提案をベースに、ご自身の言葉で調整することをおすすめします。' },
+            { q: '個人情報は安全ですか？', a: '入力された情報はAI分析のみに使用し、第三者への提供は行いません。通信は全てSSL暗号化されています。' },
+            { q: '返金はできますか？', a: 'デジタルサービスの性質上、利用開始後の返金は原則としてお受けしておりません。詳細は特定商取引法に基づく表記をご確認ください。' },
+          ].map(({ q, a }) => (
+            <details key={q} className="mb-4 border border-pink-200/60 rounded-lg glass-card">
+              <summary className="p-4 cursor-pointer text-gray-900 font-medium">{q}</summary>
+              <p className="px-4 pb-4 text-gray-500 text-sm">{a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+
       {/* フッター */}
       <footer className="text-center py-10 text-sm text-gray-400 border-t border-pink-100/60">
         <nav aria-label="フッターナビゲーション" className="flex justify-center gap-6 mb-4">
@@ -334,6 +379,10 @@ export default function Home() {
           <Link href="/pricing" aria-label="料金プランを見る" className="hover:text-pink-500 transition-colors">料金</Link>
         </nav>
         <p>© 2025 婚活AI. All rights reserved.</p>
+        <div className="flex items-center justify-center gap-2 text-xs text-gray-400 mt-4">
+          <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          SSL暗号化通信 | データは安全に保護されています
+        </div>
       </footer>
 
       <AdBanner slot="" />
