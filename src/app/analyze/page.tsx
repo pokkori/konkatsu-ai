@@ -459,6 +459,16 @@ export default function AnalyzePage() {
                 </svg>
                 Xでシェア
               </a>
+              <a
+                href={`https://social-plugins.line.me/lineit/share?url=${encodeURIComponent("https://konkatsu-ai.vercel.app")}&text=${encodeURIComponent("婚活AIでパートナー探しのアドバイスをもらいました！パートナーとも共有しよう #婚活AI #婚活")}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="婚活AIのアドバイスをLINEでパートナーに共有する（新しいタブで開きます）"
+                className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg bg-[#06C755] hover:bg-[#05b34c] text-white font-medium transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2C6.477 2 2 6.124 2 11.207c0 2.816 1.394 5.312 3.567 6.949-.157.584-.509 2.125-.584 2.453-.09.397.145.39.305.284.125-.083 1.978-1.301 2.78-1.831.636.09 1.293.138 1.932.138 5.523 0 10-4.124 10-9.207C20 6.124 17.523 2 12 2z"/></svg>
+                LINEでシェア
+              </a>
               <button
                 onClick={() => { setResult(null); setReplyText(""); setContext(""); setStreamText(""); }}
                 aria-label="フォームをリセットして別の返信を分析する"

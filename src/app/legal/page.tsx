@@ -3,6 +3,8 @@ import Link from "next/link";
 const ITEMS = [
   { label: "販売業者", value: "ポッコリラボ" },
   { label: "運営責任者", value: "ポッコリラボ 代表 新美" },
+  { label: "所在地", value: "非公開（請求があれば遅滞なく開示します）" },
+  { label: "電話番号", value: "請求があれば遅滞なく開示します" },
   { label: "お問い合わせ", value: "X(Twitter) @levona_design へのDM" },
   { label: "販売価格", value: "プレミアムプラン ¥1,980/月（税込）" },
   { label: "支払方法", value: "クレジットカード（Visa・Mastercard・American Express・JCB）" },

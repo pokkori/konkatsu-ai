@@ -93,7 +93,7 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-rose-50 to-red-50">
+    <div className="min-h-screen" style={{ background: 'radial-gradient(ellipse at 20% 10%, rgba(244, 114, 182, 0.08) 0%, transparent 50%), radial-gradient(ellipse at 80% 80%, rgba(251, 113, 133, 0.06) 0%, transparent 50%), radial-gradient(ellipse at 50% 50%, rgba(253, 164, 175, 0.04) 0%, transparent 60%), linear-gradient(135deg, #FFF1F2, #FFF5F5, #FEF2F2)' }}>
       {/* ナビゲーション — グラスモーフィズム */}
       <nav
         className="sticky top-0 z-40 glass-nav border-b border-pink-100/50 shadow-sm"
