@@ -1,24 +1,27 @@
 # 婚活AI
+> 婚活・マッチングアプリのプロフィール・メッセージをAIが支援するツール
 
-> マッチングアプリのプロフィール添削・メッセージ生成・返信分析をAIが無料サポートする婚活支援ツール
+## サービス概要
+- **カテゴリ**: 恋愛AI
+- **URL**: https://konkatsu-ai.vercel.app
+- **提供形態**: Webブラウザで利用可能（登録不要で試せます）
+- **開発**: Claude Code + Next.js 16 + Vercel
 
-## About
-Pairs・Tinder・withなど全マッチングアプリ対応。AIがプロフィールを添削してマッチ数を平均2.8倍に改善し、メッセージ3パターン即生成・返信の脈あり度分析まで行います。登録不要・無料で今すぐ試せる婚活AIサービスです。
+## 主要ページ
+- [トップページ](https://konkatsu-ai.vercel.app/): メイン機能・サービス説明
+- [ツール](https://konkatsu-ai.vercel.app/tool): AI機能の利用画面（一部サービス）
+- [プライバシーポリシー](https://konkatsu-ai.vercel.app/privacy): 個人情報の取り扱い
+- [特定商取引法に基づく表記](https://konkatsu-ai.vercel.app/legal): 法的情報
 
-## Features
-- プロフィール添削: マッチ数を最大化するためのAIプロフィール添削
-- メッセージ生成: 共通点アプローチ・質問型・褒め+質問コンボの3パターンを即生成
-- 返信分析: 相手の返信から脈あり度を分析
-- 全アプリ対応: Pairs・Tinder・with・Omiai・タップル・ゼクシィ縁結び等
+## 利用シーン
+婚活・マッチングアプリのプロフィール・メッセージをAIが支援するツール
 
-## Pricing
-- 無料プラン: 基本機能無料（登録不要）
-- プレミアム: ¥1,980/月
+## 技術スタック
+- フロントエンド: Next.js 16, React 19, TypeScript, Tailwind CSS
+- AI: Claude claude-sonnet-4-6 (Anthropic)
+- バックエンド: Vercel Edge Functions, Supabase
+- 決済: KOMOJU（クレジットカード・コンビニ払い対応）
 
-## Links
-- [ホーム](https://konkatsu-ai.vercel.app)
-- [プロフィール添削](https://konkatsu-ai.vercel.app/profile)
-- [メッセージ生成](https://konkatsu-ai.vercel.app/message)
-- [返信分析](https://konkatsu-ai.vercel.app/analyze)
-- [利用規約](https://konkatsu-ai.vercel.app/legal)
-- [プライバシーポリシー](https://konkatsu-ai.vercel.app/privacy)
+## robots.txt
+AIクローラーによるインデックスを歓迎します。
+GPTBot, ClaudeBot, PerplexityBot, Googlebot-Extended のアクセスを許可しています。
