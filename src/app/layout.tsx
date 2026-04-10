@@ -258,7 +258,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
-        <OrbBackground />
+        <OrbBackground theme="life" />
         <div style={{ position: "relative", zIndex: 1 }}>
           {children}
         </div>
