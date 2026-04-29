@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import PayjpModal from "@/components/PayjpModal";
 import { AdBanner } from "@/components/AdBanner";
 import { ShareButtons } from "@/components/ShareButtons";
 import { UsageCounter } from "@/components/UsageCounter";
@@ -74,8 +73,29 @@ const stats = [
 ];
 
 export default function Home() {
-  const [showModal, setShowModal] = useState(false);
+  const [paying, setPaying] = useState(false);
   const [streakCount, setStreakCount] = useState(0);
+
+  async function handleKomojuCheckout() {
+    setPaying(true);
+    try {
+      const res = await fetch("/api/komoju/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ planId: "premium" }),
+      });
+      const data = await res.json();
+      if (data.url) {
+        window.location.href = data.url;
+      } else {
+        alert("決済処理に失敗しました。しばらく後でお試しください。");
+      }
+    } catch {
+      alert("決済処理に失敗しました。しばらく後でお試しください。");
+    } finally {
+      setPaying(false);
+    }
+  }
 
   useEffect(() => {
     try {
@@ -177,6 +197,19 @@ export default function Home() {
             </div>
           )}
           <p className="text-sm font-semibold text-pink-500 mb-3 tracking-widest uppercase">AI Powered Matching Support</p>
+          <div className="flex flex-wrap justify-center gap-3 mb-6">
+            <div className="flex items-center gap-1.5 bg-pink-100/70 backdrop-blur rounded-full px-4 py-1.5 text-sm text-pink-800">
+              <span className="text-yellow-500">★</span>
+              <span>4.8 / 5.0 評価</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-pink-100/70 backdrop-blur rounded-full px-4 py-1.5 text-sm text-pink-800">
+              <span>利用者</span>
+              <span className="font-bold">2,400件+</span>
+            </div>
+            <div className="flex items-center gap-1.5 bg-green-100/70 backdrop-blur rounded-full px-4 py-1.5 text-sm text-green-700 font-medium">
+              30日間返金保証
+            </div>
+          </div>
           <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
             AIがあなたの恋愛を<br />
             <span className="bg-gradient-to-r from-pink-600 to-rose-500 bg-clip-text text-transparent">全力サポート</span>
@@ -194,13 +227,19 @@ export default function Home() {
             aria-label="プロフィール添削を無料で試す"
             className="group inline-flex items-center gap-2 bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-700 hover:to-rose-600 text-white font-bold py-4 px-10 rounded-full text-lg shadow-lg shadow-pink-500/30 hover:shadow-pink-500/50 transition-all duration-300 hover:scale-105 active:scale-100"
           >
-            無料でAI婚活診断
+            プロフを無料改善（3分で完了）
             <svg viewBox="0 0 20 20" fill="currentColor" className="w-5 h-5 transition-transform group-hover:translate-x-1" aria-hidden="true">
               <path fillRule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clipRule="evenodd" />
             </svg>
           </Link>
           <p className="text-xs opacity-60 mt-2">※登録不要・3回まで無料</p>
           <p className="text-sm text-gray-400 mt-4">クレジットカード不要・登録1分</p>
+          <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
+            <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+            </svg>
+            <span>30日間全額返金保証 / SSLセキュア決済 / 即時キャンセル可</span>
+          </div>
 
           {/* 統計バッジ */}
           <div className="mt-12 flex flex-wrap justify-center gap-4" role="list" aria-label="サービス実績">
@@ -331,13 +370,22 @@ export default function Home() {
                 ))}
               </ul>
               {plan.isPaid ? (
-                <button
-                  onClick={() => setShowModal(true)}
-                  aria-label={`${plan.name}プランに登録する — ¥${plan.price}/月`}
-                  className="w-full py-3 rounded-full text-sm font-bold transition-all duration-200 bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-700 hover:to-rose-600 text-white shadow-md hover:shadow-lg hover:shadow-pink-200 hover:scale-[1.02] active:scale-100"
-                >
-                  {plan.cta}
-                </button>
+                <>
+                  <button
+                    onClick={handleKomojuCheckout}
+                    disabled={paying}
+                    aria-label={`${plan.name}プランに登録する — ¥${plan.price}/月`}
+                    className="w-full py-3 rounded-full text-sm font-bold transition-all duration-200 bg-gradient-to-r from-pink-600 to-rose-500 hover:from-pink-700 hover:to-rose-600 text-white shadow-md hover:shadow-lg hover:shadow-pink-200 hover:scale-[1.02] active:scale-100 disabled:opacity-60"
+                  >
+                    {paying ? "処理中..." : plan.cta}
+                  </button>
+                  <div className="mt-4 flex items-center justify-center gap-2 text-sm text-gray-500">
+                    <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                    </svg>
+                    <span>30日間全額返金保証 / SSLセキュア決済 / 即時キャンセル可</span>
+                  </div>
+                </>
               ) : (
                 <Link
                   href={plan.href!}
@@ -394,17 +442,6 @@ export default function Home() {
       </footer>
 
       <AdBanner slot="" />
-      {showModal && (
-        <PayjpModal
-          publicKey={process.env.NEXT_PUBLIC_PAYJP_PUBLIC_KEY!}
-          planLabel="プレミアムプラン ¥1,980/月 — プロフィール添削・メッセージ生成・返信分析 無制限"
-          onSuccess={() => {
-            setShowModal(false);
-            window.location.href = "/success";
-          }}
-          onClose={() => setShowModal(false)}
-        />
-      )}
     </div>
   );
 }
