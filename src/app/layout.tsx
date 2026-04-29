@@ -7,6 +7,7 @@ import { GoogleAdScript } from "@/components/GoogleAdScript";
 import OrbBackground from "@/components/OrbBackground";
 import "./globals.css";
 import { InstallPrompt } from "@/components/InstallPrompt";
+import { PHProvider } from "./providers";
 
 const notoSansJP = Noto_Sans_JP({
   subsets: ["latin"],
@@ -17,7 +18,7 @@ const notoSansJP = Noto_Sans_JP({
 
 const SITE_URL = "https://konkatsu-ai.vercel.app";
 const TITLE = "婚活AI｜マッチングアプリのプロフィール添削・メッセージ生成・返信分析をAIが無料サポート";
-const DESC = "Pairs・Tinder・withなど全アプリ対応。AIがマッチングアプリのプロフィールを添削しマッチ数向上をサポート。メッセージ3パターン即生成・返信の脈あり度も分析。登録不要・無料で今すぐ試せる婚活AIサービス。";
+const DESC = "マッチングアプリの返信率がAIで改善。プロフ文・最初のメッセージ・デートの誘い方まで。";
 
 const breadcrumbLd = {
   "@context": "https://schema.org",
@@ -258,6 +259,7 @@ export default function RootLayout({
         />
       </head>
       <body className="antialiased">
+        <PHProvider>
         <OrbBackground theme="life" />
         <div style={{ position: "relative", zIndex: 1 }}>
           {children}
@@ -274,6 +276,7 @@ export default function RootLayout({
             {`(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window,document,"clarity","script","${process.env.NEXT_PUBLIC_CLARITY_ID}");`}
           </Script>
         )}
+        </PHProvider>
       </body>
     </html>
   );

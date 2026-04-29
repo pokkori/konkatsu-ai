@@ -7,6 +7,7 @@ import { ShareButtons } from "@/components/ShareButtons";
 import { UsageCounter } from "@/components/UsageCounter";
 import { CrossSell } from "@/components/CrossSell";
 import { TrustBadge } from "@/components/TrustBadge";
+import { ExitIntentPopup } from "@/components/ExitIntentPopup";
 
 const features = [
   {
@@ -406,6 +407,34 @@ export default function Home() {
         <ShareButtons url="https://konkatsu-ai.vercel.app" text="マッチングアプリの返信率がAIで上がった。プロフを見直してみて。" hashtags="婚活AI" />
       </section>
 
+      {/* マッチングアプリ アフィリエイト */}
+      <section className="py-10 px-4 max-w-2xl mx-auto">
+        <h2 className="text-sm font-bold text-pink-500 text-center mb-4">まだマッチングアプリを使っていない方はこちら（PR）</h2>
+        <div className="space-y-3">
+          <a
+            href="https://px.a8.net/svt/ejp?a8mat=4AZIOF+8OKLDE+4EPM+63OY9"
+            target="_blank"
+            rel="noopener noreferrer sponsored"
+            className="flex items-center gap-3 bg-pink-800/10 hover:bg-pink-800/20 border border-pink-400/40 rounded-xl px-4 py-3 transition-colors"
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f472b6" strokeWidth="2" strokeLinecap="round" className="shrink-0" aria-hidden="true"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+            <div className="flex-1">
+              <p className="text-sm font-bold text-pink-700">Pairs（ペアーズ）— 累計2,000万組以上のカップル誕生</p>
+              <p className="text-xs text-pink-500">真剣な恋活・婚活向けマッチングアプリ。AIの分析テクニックと組み合わせよう</p>
+            </div>
+            <span className="ml-auto text-pink-400 text-xs shrink-0">→</span>
+          </a>
+        </div>
+        <p className="text-xs text-gray-400 text-center mt-2">※ 広告・PR掲載</p>
+      </section>
+      <img
+        src="https://www19.a8.net/0.gif?a8mat=4AZIOF+8OKLDE+4EPM+63OY9"
+        alt=""
+        width={1}
+        height={1}
+        style={{ display: 'none' }}
+      />
+
       {/* FAQ */}
       <section className="px-4 py-12" aria-labelledby="faq-heading">
         <div className="max-w-3xl mx-auto">
@@ -442,6 +471,11 @@ export default function Home() {
       </footer>
 
       <AdBanner slot="" />
+      <ExitIntentPopup
+        serviceUrl="https://konkatsu-ai.vercel.app"
+        message="マッチングアプリの返信率に悩んでいませんか？AIがプロフ文を診断して改善します。"
+        ctaText="プロフを無料診断してもらう"
+      />
     </div>
   );
 }
