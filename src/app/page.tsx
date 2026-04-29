@@ -126,9 +126,9 @@ export default function Home() {
             '@context': 'https://schema.org',
             '@type': 'FAQPage',
             mainEntity: [
-              { '@type': 'Question', name: 'このサービスは無料で使えますか？', acceptedAnswer: { '@type': 'Answer', text: '基本機能は無料で3回までご利用いただけます。' } },
-              { '@type': 'Question', name: '個人情報は安全ですか？', acceptedAnswer: { '@type': 'Answer', text: '入力された情報はAI分析のみに使用し、第三者への提供は行いません。通信は全てSSL暗号化されています。' } },
-              { '@type': 'Question', name: '返金はできますか？', acceptedAnswer: { '@type': 'Answer', text: 'デジタルサービスの性質上、利用開始後の返金は原則としてお受けしておりません。' } },
+              { '@type': 'Question', name: 'マッチングアプリで最初のメッセージは何を書けばいいですか？', acceptedAnswer: { '@type': 'Answer', text: '相手のプロフィールを読んで共通点を1つ見つけ、質問を1つ添えた2〜3文が最も返信率が高いとされています。AIがプロフを分析して最適なメッセージを自動生成します。' } },
+              { '@type': 'Question', name: 'マッチングアプリで返信が来なくなる理由は？', acceptedAnswer: { '@type': 'Answer', text: 'メッセージが長すぎる・質問がない・共通点を無視した内容が主な原因です。AIが返信率を上げる改善案を提示します。' } },
+              { '@type': 'Question', name: '婚活で写真とプロフのどちらが重要ですか？', acceptedAnswer: { '@type': 'Answer', text: '写真が7割・プロフが3割と言われています。AIはプロフ文の改善と最初のメッセージ最適化でマッチング後の成約率を向上させます。' } },
             ],
           }).replace(/</g, '\\u003c'),
         }}
@@ -403,7 +403,7 @@ export default function Home() {
       {/* シェアセクション */}
       <section className="py-8 text-center">
         <p className="text-sm text-gray-400 mb-3">婚活AIを友達に教える</p>
-        <ShareButtons url="https://konkatsu-ai.vercel.app" text="婚活AIを使ってみた！" hashtags="婚活AI" />
+        <ShareButtons url="https://konkatsu-ai.vercel.app" text="マッチングアプリの返信率がAIで上がった。プロフを見直してみて。" hashtags="婚活AI" />
       </section>
 
       {/* FAQ */}
